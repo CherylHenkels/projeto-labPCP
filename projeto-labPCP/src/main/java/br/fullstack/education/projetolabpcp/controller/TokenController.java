@@ -32,9 +32,10 @@ public class TokenController {
     public ResponseEntity<LoginResponse> gerarToken(
             @RequestBody LoginRequest loginRequest
     ){
-
+        log.info("POST /login");
         LoginResponse response = tokenService.gerarToken(loginRequest);
 
+        log.info("POST /login -> 200 OK - Login bem-sucedido");
         return ResponseEntity.ok( // Objeto usado para criar um corpo de resposta
                 response // corpo de resposta é um objeto de LoginResponse
         );

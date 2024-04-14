@@ -10,5 +10,5 @@ import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     Optional <UsuarioEntity> findByNomeUsuario(String nomeUsuario); // o JPA vai criar uma query
-                                                                    // select * from usuario where nomeUsuario = :nomeUsuario
+                                                                    // select * from usuario where usuario = :usuario
 }

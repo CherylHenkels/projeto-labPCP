@@ -6,14 +6,12 @@ import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Instant;
@@ -35,8 +33,8 @@ public class TokenService {
     ){
 
         UsuarioEntity usuarioEntity = usuarioRepository
-                .findByNomeUsuario(loginRequest.nomeUsuario()) // busca dados de usuario por nomeUsuario
-                .orElseThrow(                                  // caso usuario não exista gera um erro
+                .findByNomeUsuario(loginRequest.usuario()) // busca dados de usuario pelo nome do usuario
+                .orElseThrow(                                  // caso usuario não exista, gera um erro
                         ()->{
                             log.error("Erro, usuário não existe");
                             return new RuntimeException("Erro, usuário não existe");
@@ -50,7 +48,7 @@ public class TokenService {
 
         Instant now = Instant.now();
 
-        String scope = usuarioEntity.getPerfil().getNome();
+        String scope = usuarioEntity.getPapel().getNome();
 
         JwtClaimsSet claims = JwtClaimsSet.builder() // Conjunto de campos do JWT, incluindo os campos pré-definidos e campos customizados
                 .issuer("projeto1") // autor do token

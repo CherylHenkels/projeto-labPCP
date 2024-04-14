@@ -16,10 +16,13 @@ public class UsuarioEntity {
 
     @Column(unique = true) //nome de usuário deve ser único
     private String nomeUsuario;
+
+    @Column(nullable = false)
     private String senha;
 
     @ManyToOne
-    private PerfilEntity perfil;
+    @JoinColumn(name = "id_papel", nullable = false)
+    private PapelEntity papel;
 
     //valida logins com a senha encriptada salva no banco
     public boolean senhaValida(
