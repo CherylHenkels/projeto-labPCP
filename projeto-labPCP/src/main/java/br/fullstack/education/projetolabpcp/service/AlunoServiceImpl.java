@@ -1,0 +1,50 @@
+package br.fullstack.education.projetolabpcp.service;
+
+import br.fullstack.education.projetolabpcp.datasource.entity.AlunoEntity;
+import br.fullstack.education.projetolabpcp.infra.exception.AlunoByIdNotFoundException;
+import br.fullstack.education.projetolabpcp.datasource.repository.AlunoRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class AlunoServiceImpl implements AlunoService {
+
+    private final AlunoRepository alunoRepository;
+
+    public AlunoServiceImpl(AlunoRepository alunoRepository) {
+        this.alunoRepository = alunoRepository;
+    }
+
+    @Override
+    public List<AlunoEntity> buscarTodos() {
+
+        return alunoRepository.findAll();
+    }
+
+    @Override
+    public AlunoEntity buscarPorId(Long id) {
+
+        return alunoRepository.findById(id)
+                .orElseThrow(() -> new AlunoByIdNotFoundException(id));
+    }
+
+    @Override
+    public AlunoEntity criar(AlunoEntity entity) {
+        entity.setId(null); // Garante que um novo ID será gerado.
+        return alunoRepository.save(entity);
+    }
+
+    @Override
+    public AlunoEntity alterar(Long id, AlunoEntity entity) {
+        buscarPorId(id); // Verifica a existência do Aluno.
+        entity.setId(id); // Assegura que a alteração será no Aluno correto.
+        return alunoRepository.save(entity);
+    }
+
+    @Override
+    public void excluir(Long id) {
+        AlunoEntity entity = buscarPorId(id); // Verifica se o Aluno existe antes de excluir.
+        alunoRepository.delete(entity);
+    }
+}
