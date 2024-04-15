@@ -1,0 +1,79 @@
+package br.fullstack.education.projetolabpcp.controller;
+
+
+import br.fullstack.education.projetolabpcp.datasource.entity.CursoEntity;
+import br.fullstack.education.projetolabpcp.infra.utils.JsonUtil;
+import br.fullstack.education.projetolabpcp.service.CursoService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("cursos")
+
+public class CursoController {
+
+    private final CursoService service;
+
+
+    @GetMapping
+    public ResponseEntity<List<CursoEntity>> buscarTodos() {
+        log.info("GET /cursos -> Início");
+        List<CursoEntity> cursos = service.buscarTodos();
+        log.info("GET /cursos -> Encontrados {} registros", cursos.size());
+        log.info("GET /cursos -> 200 OK");
+        log.debug("GET /cursos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(cursos));
+        return ResponseEntity.status(HttpStatus.OK).body(cursos);
+    }
+
+
+    @GetMapping("{id}")
+    public ResponseEntity<CursoEntity> buscarPorId(@PathVariable Long id) {
+        log.info("GET /cursos/{} -> Início" , id );
+        CursoEntity curso = service.buscarPorId(id);
+        log.info("GET /cursos/{} -> Encontrado", id);
+        log.info("GET /cursos/{} -> 200 OK", id);
+        log.debug("GET /cursos/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(curso));
+        return ResponseEntity.status(HttpStatus.OK).body(curso);
+    }
+
+
+    @PostMapping
+    public ResponseEntity<CursoEntity> criarCurso(@RequestHeader(name = "Authorization") String token,
+                                                      @RequestBody CursoEntity cursoRequest) {
+        log.info("POST /cursos");
+        CursoEntity curso = service.criar(cursoRequest, token.substring(7));
+        log.info("POST /cursos -> Cadastrado");
+        log.info("POST /cursos -> 201 CREATED");
+        log.debug("POST /cursos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(cursoRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(curso);
+    }
+
+
+    @PutMapping("{id}")
+    public ResponseEntity<CursoEntity> alterarCurso(@PathVariable Long id, @RequestBody CursoEntity cursoRequest) {
+        log.info("PUT /cursos/{} -> Início", id);
+        CursoEntity curso = service.alterar(id, cursoRequest);
+        log.info("PUT /cursos/{} -> Atualizado com sucesso", id);
+        log.info("PUT /cursos/{} -> 200 OK", id);
+        log.debug("PUT /cursos/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(cursoRequest));
+        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(id, curso));
+    }
+
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletarCurso(@PathVariable Long id) {
+        log.info("DELETE /cursos/{}", id);
+        service.excluir(id);
+        log.info("DELETE /cursos/{} -> Excluído", id);
+        log.info("DELETE /cursos/{} -> 204 NO CONTENT", id);
+        return ResponseEntity.noContent().build();
+    }
+
+}

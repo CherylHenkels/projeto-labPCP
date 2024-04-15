@@ -45,6 +45,7 @@ public class DocenteServiceImpl implements DocenteService {
         UsuarioEntity docenteUsuario = usuarioRepository.findById(entity.getUsuario().getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
+        entity.setId(null); // garante que novo Id vai ser criado
         entity.setUsuario(docenteUsuario); // Faz o link do usuario com o docente
         return docenteRepository.save(entity);
     }
