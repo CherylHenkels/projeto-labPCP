@@ -26,7 +26,7 @@ import java.time.Instant;
 public class TokenController {
 
     private final TokenService tokenService;
-    private static long TEMPO_EXPIRACAO = 36000L; //contante de tempo de expiração em segundos
+//    private static long TEMPO_EXPIRACAO = 360000L; //contante de tempo de expiração em segundos (10 horas)
 
     @PostMapping("/login") //post para gerar o token
     public ResponseEntity<LoginResponse> gerarToken(

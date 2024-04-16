@@ -6,5 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class DocenteRequest {
+    private String nome;
     private Long id_usuario;
 }

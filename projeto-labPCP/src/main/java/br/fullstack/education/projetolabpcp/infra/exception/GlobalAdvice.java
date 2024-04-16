@@ -24,7 +24,7 @@ public class GlobalAdvice {
     public ResponseEntity<?> handler(DataIntegrityViolationException e) {
         ErroRequest erro = ErroRequest.builder()
                 .codigo("400")
-                .mensagem(e.getMessage())
+                .mensagem("Requisição inválida, por exemplo, dados ausentes ou incorretos")
                 .build();
         return ResponseEntity.status(400).body(erro);
     }
@@ -50,7 +50,7 @@ public class GlobalAdvice {
 
     @ExceptionHandler(DocenteByIdNotFoundException.class)
     public ResponseEntity<?> handler(DocenteByIdNotFoundException e) {
-        String mensagem = "Professor não encontrado com id: " + e.getDocenteId();
+        String mensagem = "Docente não encontrado com id: " + e.getDocenteId();
         ErroRequest erro = ErroRequest.builder()
                 .codigo("404")
                 .mensagem(mensagem)

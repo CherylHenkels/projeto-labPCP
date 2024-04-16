@@ -1,6 +1,8 @@
 package br.fullstack.education.projetolabpcp.controller;
 
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.DocenteRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.DocenteResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.DocenteEntity;
 import br.fullstack.education.projetolabpcp.infra.utils.JsonUtil;
 import br.fullstack.education.projetolabpcp.service.DocenteService;
@@ -23,9 +25,9 @@ public class DocenteController {
 
 
     @GetMapping
-    public ResponseEntity<List<DocenteEntity>> buscarTodos() {
+    public ResponseEntity<List<DocenteResponse>> buscarTodos() {
         log.info("GET /docentes -> Início");
-        List<DocenteEntity> docentes = service.buscarTodos();
+        List<DocenteResponse> docentes = service.buscarTodos();
         log.info("GET /docentes -> Encontrados {} registros", docentes.size());
         log.info("GET /docentes -> 200 OK");
         log.debug("GET /docentes -> Response Body:\n{}\n", JsonUtil.objetoParaJson(docentes));
@@ -34,10 +36,10 @@ public class DocenteController {
 
 
     @GetMapping("{id}")
-    public ResponseEntity<DocenteEntity> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<DocenteResponse> buscarPorId(@PathVariable Long id) {
         log.info("GET /docentes/{} -> Início" , id );
-        DocenteEntity docente = service.buscarPorId(id);
-        log.info("GET /docentes/{} -> Encontrado", id);
+        DocenteResponse docente = service.buscarPorId(id);
+        log.info("GET /docentes/{} -> Docente encontrado", id);
         log.info("GET /docentes/{} -> 200 OK", id);
         log.debug("GET /docentes/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(docente));
         return ResponseEntity.status(HttpStatus.OK).body(docente);
@@ -45,11 +47,11 @@ public class DocenteController {
 
 
     @PostMapping
-    public ResponseEntity<DocenteEntity> criarDocente(@RequestHeader(name = "Authorization") String token,
-                                                      @RequestBody DocenteEntity docenteRequest) {
-        log.info("POST /docentes");
-        DocenteEntity docente = service.criar(docenteRequest, token.substring(7));
-        log.info("POST /docentes -> Cadastrado");
+    public ResponseEntity<DocenteResponse> criarDocente(@RequestHeader(name = "Authorization") String token,
+                                                      @RequestBody DocenteRequest docenteRequest) {
+        log.info("POST /docentes -> Início");
+        DocenteResponse docente = service.criar(docenteRequest, token.substring(7));
+        log.info("POST /docentes -> Docente criado com sucesso");
         log.info("POST /docentes -> 201 CREATED");
         log.debug("POST /docentes -> Response Body:\n{}\n", JsonUtil.objetoParaJson(docenteRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(docente);
@@ -57,21 +59,21 @@ public class DocenteController {
 
 
     @PutMapping("{id}")
-    public ResponseEntity<DocenteEntity> alterarDocente(@PathVariable Long id, @RequestBody DocenteEntity docenteRequest) {
+    public ResponseEntity<DocenteResponse> alterarDocente(@PathVariable Long id, @RequestBody DocenteRequest docenteRequest) {
         log.info("PUT /docentes/{} -> Início", id);
-        DocenteEntity docente = service.alterar(id, docenteRequest);
-        log.info("PUT /docentes/{} -> Atualizado com sucesso", id);
+        DocenteResponse docente = service.alterar(id, docenteRequest);
+        log.info("PUT /docentes/{} -> Docente atualizado com sucesso", id);
         log.info("PUT /docentes/{} -> 200 OK", id);
         log.debug("PUT /docentes/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(docenteRequest));
-        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(id, docente));
+        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(id, docenteRequest));
     }
 
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletarDocente(@PathVariable Long id) {
-        log.info("DELETE /docentes/{}", id);
+        log.info("DELETE /docentes/{} -> Início", id);
         service.excluir(id);
-        log.info("DELETE /docentes/{} -> Excluído", id);
+        log.info("DELETE /docentes/{} -> Docente excluído com sucesso", id);
         log.info("DELETE /docentes/{} -> 204 NO CONTENT", id);
         return ResponseEntity.noContent().build();
     }
