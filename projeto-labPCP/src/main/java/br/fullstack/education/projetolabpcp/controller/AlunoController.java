@@ -45,12 +45,13 @@ public class AlunoController {
 
 
     @PostMapping
-    public ResponseEntity<AlunoEntity> criarAluno(@RequestBody AlunoEntity alunoRequisicao) {
+    public ResponseEntity<AlunoEntity> criarAluno(@RequestHeader(name = "Authorization") String token,
+                                                  @RequestBody AlunoEntity alunoRequest) {
         log.info("POST /alunos");
-        AlunoEntity aluno = service.criar(alunoRequisicao);
+        AlunoEntity aluno = service.criar(alunoRequest, token.substring(7));
         log.info("POST /alunos -> Cadastrado");
         log.info("POST /alunos -> 201 CREATED");
-        log.debug("POST /alunos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(alunoRequisicao));
+        log.debug("POST /alunos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(alunoRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(aluno);
     }
 

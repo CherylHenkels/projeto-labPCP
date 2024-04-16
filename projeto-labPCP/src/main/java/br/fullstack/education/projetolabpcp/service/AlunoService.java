@@ -10,7 +10,7 @@ public interface AlunoService {
 
     AlunoEntity buscarPorId(Long id);
 
-    AlunoEntity criar(AlunoEntity entity);
+    AlunoEntity criar(AlunoEntity entity, String token);
 
     AlunoEntity alterar(Long id, AlunoEntity entity);
 
