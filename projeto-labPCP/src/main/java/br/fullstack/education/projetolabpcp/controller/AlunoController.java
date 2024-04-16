@@ -1,9 +1,11 @@
 package br.fullstack.education.projetolabpcp.controller;
 
 
+import br.fullstack.education.projetolabpcp.datasource.entity.NotaEntity;
 import br.fullstack.education.projetolabpcp.service.AlunoService;
 import br.fullstack.education.projetolabpcp.datasource.entity.AlunoEntity;
 import br.fullstack.education.projetolabpcp.infra.utils.JsonUtil;
+import br.fullstack.education.projetolabpcp.service.NotaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.List;
 public class AlunoController {
 
     private final AlunoService service;
+    private final NotaService notaService;
 
 
     @GetMapping
@@ -41,6 +44,16 @@ public class AlunoController {
         log.info("GET /alunos/{} -> 200 OK", id);
         log.debug("GET /alunos/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(aluno));
         return ResponseEntity.status(HttpStatus.OK).body(aluno);
+    }
+
+    @GetMapping({"{id_aluno}/notas"})
+    public ResponseEntity<List<NotaEntity>> buscarNotasPorAlunoId(@PathVariable("id_aluno") Long idAluno) {
+        log.info("GET /alunos/{id_aluno}/notas -> Início");
+        List<NotaEntity> notas = notaService.buscarPorAlunoId(idAluno);
+        log.info("GET /alunos/{id_aluno}/notas -> Encontrados {} registros", notas.size());
+        log.info("GET /alunos/{id_aluno}/notas-> 200 OK");
+        log.debug("GET /alunos/{id_aluno}/notas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(notas));
+        return ResponseEntity.status(HttpStatus.OK).body(notas);
     }
 
 
