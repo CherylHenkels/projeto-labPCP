@@ -2,8 +2,10 @@ package br.fullstack.education.projetolabpcp.controller;
 
 
 import br.fullstack.education.projetolabpcp.datasource.entity.CursoEntity;
+import br.fullstack.education.projetolabpcp.datasource.entity.MateriaEntity;
 import br.fullstack.education.projetolabpcp.infra.utils.JsonUtil;
 import br.fullstack.education.projetolabpcp.service.CursoService;
+import br.fullstack.education.projetolabpcp.service.MateriaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.List;
 public class CursoController {
 
     private final CursoService service;
+    private final MateriaService materiaService;
 
 
     @GetMapping
@@ -30,6 +33,16 @@ public class CursoController {
         log.info("GET /cursos -> 200 OK");
         log.debug("GET /cursos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(cursos));
         return ResponseEntity.status(HttpStatus.OK).body(cursos);
+    }
+
+    @GetMapping("{id_curso}/materias")
+    public ResponseEntity<List<MateriaEntity>> buscarMateriasPorCursoId(@PathVariable("id_curso") Long idCurso) {
+        log.info("GET /cursos/{id_curso}/materias -> Início");
+        List<MateriaEntity> materias = materiaService.buscarPorCursoId(idCurso);
+        log.info("GET /cursos/{id_curso}/materias -> Encontrados {} registros", materias.size());
+        log.info("GET /cursos/{id_curso}/materias -> 200 OK");
+        log.debug("GET /cursos/{id_curso}/materias -> Response Body:\n{}\n", JsonUtil.objetoParaJson(materias));
+        return ResponseEntity.status(HttpStatus.OK).body(materias);
     }
 
 
