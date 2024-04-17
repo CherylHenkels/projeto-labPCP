@@ -69,7 +69,7 @@ public class CursoController {
         CursoResponse curso = service.criar(cursoRequest, token.substring(7));
         log.info("POST /cursos -> Curso criado com sucesso");
         log.info("POST /cursos -> 201 CREATED");
-        log.debug("POST /cursos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(cursoRequest));
+        log.debug("POST /cursos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(curso));
         return ResponseEntity.status(HttpStatus.CREATED).body(curso);
     }
 
@@ -81,8 +81,8 @@ public class CursoController {
         CursoResponse curso = service.alterar(id, cursoRequest);
         log.info("PUT /cursos/{} -> Curso atualizado com sucesso", id);
         log.info("PUT /cursos/{} -> 200 OK", id);
-        log.debug("PUT /cursos/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(cursoRequest));
-        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(id, cursoRequest));
+        log.debug("PUT /cursos/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(curso));
+        return ResponseEntity.status(HttpStatus.OK).body(curso);
     }
 
 

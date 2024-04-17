@@ -53,7 +53,7 @@ public class TurmaController {
         TurmaResponse turma = service.criar(turmaRequest, token.substring(7));
         log.info("POST /turmas -> Turma cadastrada");
         log.info("POST /turmas -> 201 CREATED");
-        log.debug("POST /turmas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(turmaRequest));
+        log.debug("POST /turmas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(turma));
         return ResponseEntity.status(HttpStatus.CREATED).body(turma);
     }
 
@@ -64,7 +64,7 @@ public class TurmaController {
         TurmaResponse turma = service.alterar(id, turmaRequest);
         log.info("PUT /turmas/{} -> Turma atualizada com sucesso", id);
         log.info("PUT /turmas/{} -> 200 OK", id);
-        log.debug("PUT /turmas/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(turmaRequest));
+        log.debug("PUT /turmas/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(turma));
         return ResponseEntity.status(HttpStatus.OK).body(turma);
     }
 

@@ -58,43 +58,6 @@ public class GlobalAdvice {
         return ResponseEntity.status(404).body(erro);
     }
 
-//    @ExceptionHandler(DisciplinaByIdNotFoundException.class)
-//    public ResponseEntity<?> handler(DisciplinaByIdNotFoundException e) {
-//        String mensagem = "Disciplina não encontrada com id: " + e.getDisciplinaId();
-//        ErroRequest erro = ErroRequest.builder()
-//                .codigo("404")
-//                .mensagem(mensagem)
-//                .build();
-//        return ResponseEntity.status(404).body(erro);
-//    }
-//
-//    @ExceptionHandler(DisciplinaMatriculaByIdNotFoundException.class)
-//    public ResponseEntity<?> handler(DisciplinaMatriculaByIdNotFoundException e) {
-//        String mensagem = "Matrícula em disciplina não encontrada com id: " + e.getDisciplinaMatriculaId();
-//        ErroRequest erro = ErroRequest.builder()
-//                .codigo("404")
-//                .mensagem(mensagem)
-//                .build();
-//        return ResponseEntity.status(404).body(erro);
-//    }
-//
-//    @ExceptionHandler(OperacaoNaoPermitidaException.class)
-//    public ResponseEntity<?> handleOperacaoNaoPermitida(OperacaoNaoPermitidaException e) {
-//        String mensagem = "Existem notas lançadas para esta matrícula, não é possível excluir.";
-//        ErroRequest erro = ErroRequest.builder()
-//                .codigo("422") // Usando o código 422 Unprocessable Entity
-//                .mensagem(mensagem)
-//                .build();
-//        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erro);
-//    }
-//
-//    @ExceptionHandler(MatriculaDuplicadaException.class)
-//    public ResponseEntity<?> handleMatriculaDuplicada(MatriculaDuplicadaException e) {
-//        ErroRequest erro = ErroRequest.builder()
-//                .codigo("409") // HTTP 409 Conflict
-//                .mensagem(e.getMessage())
-//                .build();
-//        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
-//    }
+
 
 }

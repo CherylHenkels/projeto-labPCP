@@ -65,7 +65,7 @@ public class AlunoController {
                                                   @RequestBody AlunoRequest alunoRequest) {
         log.info("POST /alunos -> Início");
         AlunoResponse aluno = service.criar(alunoRequest, token.substring(7));
-        log.info("POST /alunos -> Aluno cadastrado com sucesso.");
+        log.info("POST /alunos -> Aluno criado com sucesso.");
         log.info("POST /alunos -> 201 CREATED");
         log.debug("POST /alunos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(aluno));
         return ResponseEntity.status(HttpStatus.CREATED).body(aluno);

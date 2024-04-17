@@ -43,7 +43,7 @@ public class DocenteServiceImpl implements DocenteService {
     public DocenteResponse buscarPorId(Long id) {
 
         DocenteEntity docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new DocenteByIdNotFoundException(id)) ;
+                .orElseThrow(() -> new NotFoundException("Docente não encontrado com id:" + id)) ;
 
         return new DocenteResponse(docente.getId(), docente.getNome(), docente.getDataEntrada());
     }
@@ -88,7 +88,7 @@ public class DocenteServiceImpl implements DocenteService {
     @Override
     public void excluir(Long id) {
         DocenteEntity docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new DocenteByIdNotFoundException(id)) ; // Verifica se o Docente existe antes de excluir.
+                .orElseThrow(() -> new NotFoundException("Docente não encontrado com id:" + id)) ; // Verifica se o Docente existe antes de excluir.
         docenteRepository.delete(docente);
     }
 }

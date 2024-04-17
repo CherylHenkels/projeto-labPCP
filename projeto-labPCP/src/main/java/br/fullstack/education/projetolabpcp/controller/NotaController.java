@@ -39,7 +39,7 @@ public class NotaController {
     public ResponseEntity<NotaResponse> buscarPorId(@PathVariable Long id) {
         log.info("GET /notas/{} -> Início" , id );
         NotaResponse nota = service.buscarPorId(id);
-        log.info("GET /notas/{} -> Nota ncontrada", id);
+        log.info("GET /notas/{} -> Nota encontrada", id);
         log.info("GET /notas/{} -> 200 OK", id);
         log.debug("GET /notas/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(nota));
         return ResponseEntity.status(HttpStatus.OK).body(nota);
@@ -60,7 +60,7 @@ public class NotaController {
                                                       @RequestBody NotaRequest notaRequest) {
         log.info("POST /notas -> Início");
         NotaResponse nota = service.criar(notaRequest, token.substring(7));
-        log.info("POST /notas -> Nota cadastrada com sucesso");
+        log.info("POST /notas -> Nota criada com sucesso");
         log.info("POST /notas -> 201 CREATED");
         log.debug("POST /notas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(nota));
         return ResponseEntity.status(HttpStatus.CREATED).body(nota);
