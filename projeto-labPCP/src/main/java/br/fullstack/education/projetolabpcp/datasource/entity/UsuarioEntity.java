@@ -7,7 +7,7 @@ import br.fullstack.education.projetolabpcp.controller.dto.request.LoginRequest;
 
 @Data
 @Entity
-@Table(name="usuario")
+@Table(name="usuarios")
 public class UsuarioEntity {
 
     @Id

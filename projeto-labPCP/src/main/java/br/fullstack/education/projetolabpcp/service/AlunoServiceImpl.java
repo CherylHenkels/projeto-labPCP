@@ -1,0 +1,112 @@
+package br.fullstack.education.projetolabpcp.service;
+
+import br.fullstack.education.projetolabpcp.controller.dto.request.AlunoRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.AlunoResponse;
+import br.fullstack.education.projetolabpcp.controller.dto.response.DocenteResponse;
+import br.fullstack.education.projetolabpcp.datasource.entity.AlunoEntity;
+import br.fullstack.education.projetolabpcp.datasource.entity.DocenteEntity;
+import br.fullstack.education.projetolabpcp.datasource.entity.TurmaEntity;
+import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
+import br.fullstack.education.projetolabpcp.datasource.repository.TurmaRepository;
+import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
+import br.fullstack.education.projetolabpcp.infra.exception.AlunoByIdNotFoundException;
+import br.fullstack.education.projetolabpcp.datasource.repository.AlunoRepository;
+import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class AlunoServiceImpl implements AlunoService {
+
+    private final AlunoRepository alunoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final TokenService tokenService;
+    private final TurmaRepository turmaRepository;
+
+    public AlunoServiceImpl(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository, TokenService tokenService, TurmaRepository turmaRepository) {
+        this.alunoRepository = alunoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.tokenService = tokenService;
+        this.turmaRepository = turmaRepository;
+    }
+
+    @Override
+    public List<AlunoResponse> buscarTodos() {
+        List<AlunoEntity> alunos = alunoRepository.findAll();
+
+        if (alunos.isEmpty()) {
+            throw new NotFoundException("Não há alunos cadastrados.");
+        }
+
+        return alunos.stream().map( //mapear a lista de AlunoEntity para uma lista de AlunoResponse
+                t -> new AlunoResponse(t.getId(), t.getNome(), t.getDataNascimento(), t.getUsuario().getId(), t.getTurma().getId() )
+        ).toList();
+    }
+
+    @Override
+    public AlunoResponse buscarPorId(Long id) {
+
+        AlunoEntity aluno = alunoRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Aluno não encontrado com id:" + id));
+
+        return new AlunoResponse(aluno.getId(), aluno.getNome(), aluno.getDataNascimento(),aluno.getUsuario().getId(), aluno.getTurma().getId());
+    }
+
+    @Override
+    public AlunoResponse criar(AlunoRequest alunoRequest, String token) {
+
+        // Pega id do token para mais tarde validar o usuário
+        Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
+
+        // cria usuario que será vinculado ao aluno
+        UsuarioEntity alunoUsuario = usuarioRepository.findById(alunoRequest.getId_usuario())
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com id:" + alunoRequest.getId_usuario()));
+
+        // cria turma que será vinculado ao aluno
+        TurmaEntity alunoTurma = turmaRepository.findById(alunoRequest.getId_turma())
+                .orElseThrow(() -> new NotFoundException("Turma não encontrada com id:" + alunoRequest.getId_turma()));
+
+        AlunoEntity aluno = new AlunoEntity();
+        aluno.setId(null); // Garante que um novo ID será gerado.
+        aluno.setNome(alunoRequest.getNome());
+        aluno.setDataNascimento(alunoRequest.getDataNascimento());
+        aluno.setUsuario(alunoUsuario); // Faz o link do usuario com o aluno
+        aluno.setTurma(alunoTurma); // Faz o link da turma com o aluno
+        alunoRepository.save(aluno);
+
+        return new AlunoResponse(aluno.getId(), aluno.getNome(), aluno.getDataNascimento(),
+                aluno.getUsuario().getId(), aluno.getTurma().getId());
+    }
+
+    @Override
+    public AlunoResponse alterar(Long id, AlunoRequest alunoRequest) {
+        buscarPorId(id); // Verifica a existência do Aluno.
+
+        // cria usuario que será vinculado ao aluno
+        UsuarioEntity alunoUsuario = usuarioRepository.findById(alunoRequest.getId_usuario())
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com id:" + alunoRequest.getId_usuario()));
+
+        // cria turma que será vinculado ao aluno
+        TurmaEntity alunoTurma = turmaRepository.findById(alunoRequest.getId_turma())
+                .orElseThrow(() -> new NotFoundException("Turma não encontrada com id:" + alunoRequest.getId_turma()));
+
+        AlunoEntity aluno = new AlunoEntity();
+        aluno.setId(id);
+        aluno.setNome(alunoRequest.getNome());
+        aluno.setDataNascimento(alunoRequest.getDataNascimento());
+        aluno.setUsuario(alunoUsuario);
+        aluno.setTurma(alunoTurma);
+        alunoRepository.save(aluno);
+
+        return new AlunoResponse(aluno.getId(), aluno.getNome(), aluno.getDataNascimento(),
+                aluno.getUsuario().getId(), aluno.getTurma().getId());
+    }
+
+    @Override
+    public void excluir(Long id) {
+        AlunoEntity aluno = alunoRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Aluno não encontrado com id:" + id)); // Verifica se o Aluno existe antes de excluir.
+        alunoRepository.delete(aluno);
+    }
+}
