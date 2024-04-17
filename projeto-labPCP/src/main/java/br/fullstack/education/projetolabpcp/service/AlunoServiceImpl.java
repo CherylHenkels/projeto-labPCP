@@ -3,10 +3,8 @@ package br.fullstack.education.projetolabpcp.service;
 import br.fullstack.education.projetolabpcp.controller.dto.request.AlunoRequest;
 import br.fullstack.education.projetolabpcp.controller.dto.response.AlunoResponse;
 import br.fullstack.education.projetolabpcp.controller.dto.response.DocenteResponse;
-import br.fullstack.education.projetolabpcp.datasource.entity.AlunoEntity;
-import br.fullstack.education.projetolabpcp.datasource.entity.DocenteEntity;
-import br.fullstack.education.projetolabpcp.datasource.entity.TurmaEntity;
-import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
+import br.fullstack.education.projetolabpcp.datasource.entity.*;
+import br.fullstack.education.projetolabpcp.datasource.repository.NotaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.TurmaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.AlunoByIdNotFoundException;
@@ -23,12 +21,14 @@ public class AlunoServiceImpl implements AlunoService {
     private final UsuarioRepository usuarioRepository;
     private final TokenService tokenService;
     private final TurmaRepository turmaRepository;
+    private final NotaRepository notaRepository;
 
-    public AlunoServiceImpl(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository, TokenService tokenService, TurmaRepository turmaRepository) {
+    public AlunoServiceImpl(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository, TokenService tokenService, TurmaRepository turmaRepository, NotaRepository notaRepository) {
         this.alunoRepository = alunoRepository;
         this.usuarioRepository = usuarioRepository;
         this.tokenService = tokenService;
         this.turmaRepository = turmaRepository;
+        this.notaRepository = notaRepository;
     }
 
     @Override
@@ -109,4 +109,6 @@ public class AlunoServiceImpl implements AlunoService {
                 .orElseThrow(()-> new NotFoundException("Aluno não encontrado com id:" + id)); // Verifica se o Aluno existe antes de excluir.
         alunoRepository.delete(aluno);
     }
+
+
 }

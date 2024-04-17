@@ -19,4 +19,6 @@ public interface NotaService {
     void excluir(Long id);
 
     List<NotaResponse> buscarPorAlunoId(Long idAluno);
+
+    Double calcularPontuacaoAluno(Long id);
 }

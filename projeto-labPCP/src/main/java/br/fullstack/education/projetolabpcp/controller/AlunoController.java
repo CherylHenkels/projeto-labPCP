@@ -92,4 +92,14 @@ public class AlunoController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("{id}/pontuacao")
+    public ResponseEntity<Double> pontuacaoAluno(@PathVariable Long id) {
+        log.info("GET /alunos/{id}/pontuacao -> Início");
+        Double pontuacao = notaService.calcularPontuacaoAluno(id);
+         log.info("GET /alunos/{}/pontuacao -> Pontuação calculada com sucesso.", id);
+         log.info("GET /alunos/{}/pontuacao -> 200 OK", id);
+        log.debug("GET /alunos/{}/pontuacao -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(pontuacao));
+        return ResponseEntity.status(HttpStatus.OK).body(pontuacao);
+    }
+
 }

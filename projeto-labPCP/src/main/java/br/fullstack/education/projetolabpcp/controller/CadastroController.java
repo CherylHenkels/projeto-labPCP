@@ -1,7 +1,9 @@
 package br.fullstack.education.projetolabpcp.controller;
 
 import br.fullstack.education.projetolabpcp.controller.dto.request.InserirUsuarioRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.InserirUsuarioResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
+import br.fullstack.education.projetolabpcp.infra.utils.JsonUtil;
 import br.fullstack.education.projetolabpcp.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,18 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 
 public class CadastroController {
+
     private final UsuarioService usuarioService;
 
     @PostMapping("/cadastro")
-    public ResponseEntity<String> novoUsuario(
+    public ResponseEntity<InserirUsuarioResponse> novoUsuario(
             @Validated @RequestBody InserirUsuarioRequest inserirUsuarioRequest
     ) {
-
-        log.info("POST /cadastro");
-        UsuarioEntity usuario = usuarioService.cadastraNovoUsuario(inserirUsuarioRequest);
-
-        log.info("POST /cadastro -> 201 CREATED - Usuário cadastrado com sucesso");
-        return ResponseEntity.ok("Usuário cadastrado com sucesso");
+        log.info("POST /cadastro -> Início");
+        InserirUsuarioResponse usuario = usuarioService.cadastraNovoUsuario(inserirUsuarioRequest);
+        log.info("POST /cadastro -> Usuário cadastrado com sucesso");
+        log.info("POST /cadastro -> 201 CREATED");
+        log.debug("POST /cadastro -> Response Body:\n{}\n", JsonUtil.objetoParaJson(usuario));
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
 }
