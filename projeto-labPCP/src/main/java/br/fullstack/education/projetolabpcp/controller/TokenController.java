@@ -4,9 +4,11 @@ import br.fullstack.education.projetolabpcp.controller.dto.request.LoginRequest;
 import br.fullstack.education.projetolabpcp.controller.dto.response.LoginResponse;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
 import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
+import br.fullstack.education.projetolabpcp.infra.utils.JsonUtil;
 import br.fullstack.education.projetolabpcp.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -23,6 +25,7 @@ import java.time.Instant;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+
 public class TokenController {
 
     private final TokenService tokenService;
@@ -32,13 +35,12 @@ public class TokenController {
     public ResponseEntity<LoginResponse> gerarToken(
             @RequestBody LoginRequest loginRequest
     ){
-        log.info("POST /login");
+        log.info("POST /login -> Início");
         LoginResponse response = tokenService.gerarToken(loginRequest);
-
-        log.info("POST /login -> 200 OK - Login bem-sucedido");
-        return ResponseEntity.ok( // Objeto usado para criar um corpo de resposta
-                response // corpo de resposta é um objeto de LoginResponse
-        );
+        log.info("POST /login -> Login bem-sucedido");
+        log.info("POST /login -> 200 OK");
+        log.debug("POST /login ->  Response Body:\n{}\n", JsonUtil.objetoParaJson(response));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
