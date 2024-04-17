@@ -126,13 +126,38 @@ public class NotaServiceImpl implements NotaService {
     @Override
     public List<NotaResponse> buscarPorAlunoId(Long idAluno) {
         if (!alunoRepository.existsById(idAluno)) {
-            throw new NotFoundException("Não há notas cadastradas para o aluno com id:" + idAluno);
+            throw new NotFoundException("Aluno não encontrado com id:" + idAluno);
         }
 
         List<NotaEntity> notas = notaRepository.findByAlunoId(idAluno);
+        if(notas.isEmpty()){
+            throw new NotFoundException("Não há notas cadastradas para o aluno com id: " + idAluno);
+        }
+
         return notas.stream().map(
                 t -> new NotaResponse(t.getId(), t.getValor(), t.getData(),
                         t.getAluno().getId(), t.getDocente().getId(), t.getMateria().getId())
         ).toList() ;
+    }
+
+    @Override
+    public Double calcularPontuacaoAluno(Long idAluno) {
+        if (!alunoRepository.existsById(idAluno)) {
+            throw new NotFoundException("Aluno não encontrado com id:" + idAluno);
+        }
+
+        List<NotaEntity> notas = notaRepository.findByAlunoId(idAluno);
+        if(notas.isEmpty()){
+            throw new NotFoundException("Não há notas cadastradas para o aluno com id: " + idAluno);
+        }
+
+        //Cálculo pontuação
+        Double pontuacao = 0.0;
+        for (NotaEntity notaAluno : notas) {
+            pontuacao += notaAluno.getValor();
+        }
+        pontuacao = pontuacao / notas.size() * 10;
+
+        return pontuacao;
     }
 }
