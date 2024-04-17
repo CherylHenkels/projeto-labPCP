@@ -24,6 +24,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     public InserirUsuarioResponse cadastraNovoUsuario(
             @RequestBody InserirUsuarioRequest inserirUsuarioRequest
     ) {
+        if (inserirUsuarioRequest.usuario() == null || inserirUsuarioRequest.usuario().trim().isEmpty()) {
+            throw new InvalidRequestException("Nome do usuário é obrigatório");
+        }
+        if (inserirUsuarioRequest.senha() == null || inserirUsuarioRequest.senha().trim().isEmpty()) {
+            throw new InvalidRequestException("Senha é obrigatória");
+        }
+
         boolean usuarioExiste = usuarioRepository
                 .findByNomeUsuario(inserirUsuarioRequest.usuario())
                 .isPresent(); // retorna um true se a entidade procurada existir, caso o contrário, retorna false
