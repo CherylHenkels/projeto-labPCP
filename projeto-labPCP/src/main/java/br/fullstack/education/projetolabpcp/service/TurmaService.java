@@ -1,18 +1,20 @@
 package br.fullstack.education.projetolabpcp.service;
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.TurmaRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.TurmaResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.TurmaEntity;
 
 import java.util.List;
 
 public interface TurmaService {
 
-    List<TurmaEntity> buscarTodos();
+    List<TurmaResponse> buscarTodos();
 
-    TurmaEntity buscarPorId(Long id);
+    TurmaResponse buscarPorId(Long id);
 
-    TurmaEntity criar(TurmaEntity entity, String token);
+    TurmaResponse criar(TurmaRequest turmaRequest, String token);
 
-    TurmaEntity alterar(Long id, TurmaEntity entity);
+    TurmaResponse alterar(Long id, TurmaRequest turmaRequest);
 
     void excluir(Long id);
 

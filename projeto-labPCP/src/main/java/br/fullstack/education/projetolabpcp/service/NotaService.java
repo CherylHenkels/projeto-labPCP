@@ -1,20 +1,22 @@
 package br.fullstack.education.projetolabpcp.service;
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.NotaRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.NotaResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.NotaEntity;
 
 import java.util.List;
 
 public interface NotaService {
 
-    List<NotaEntity> buscarTodos();
+    List<NotaResponse> buscarTodos();
 
-    NotaEntity buscarPorId(Long id);
+    NotaResponse buscarPorId(Long id);
 
-    NotaEntity criar(NotaEntity entity, String token);
+    NotaResponse criar(NotaRequest notaRequest, String token);
 
-    NotaEntity alterar(Long id, NotaEntity entity);
+    NotaResponse alterar(Long id, NotaRequest entity);
 
     void excluir(Long id);
 
-    List<NotaEntity> buscarPorAlunoId(Long idAluno);
+    List<NotaResponse> buscarPorAlunoId(Long idAluno);
 }

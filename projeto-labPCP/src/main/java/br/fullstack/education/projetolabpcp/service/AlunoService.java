@@ -1,18 +1,20 @@
 package br.fullstack.education.projetolabpcp.service;
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.AlunoRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.AlunoResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.AlunoEntity;
 
 import java.util.List;
 
 public interface AlunoService {
 
-    List<AlunoEntity> buscarTodos();
+    List<AlunoResponse> buscarTodos();
 
-    AlunoEntity buscarPorId(Long id);
+    AlunoResponse buscarPorId(Long id);
 
-    AlunoEntity criar(AlunoEntity entity, String token);
+    AlunoResponse criar(AlunoRequest alunoRequest, String token);
 
-    AlunoEntity alterar(Long id, AlunoEntity entity);
+    AlunoResponse alterar(Long id, AlunoRequest alunoRequest);
 
     void excluir(Long id);
 

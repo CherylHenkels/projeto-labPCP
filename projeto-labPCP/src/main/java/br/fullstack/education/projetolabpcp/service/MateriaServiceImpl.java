@@ -1,11 +1,14 @@
 package br.fullstack.education.projetolabpcp.service;
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.MateriaRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.MateriaResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.CursoEntity;
 import br.fullstack.education.projetolabpcp.datasource.entity.MateriaEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.MateriaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.CursoRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.CursoByIdNotFoundException;
 import br.fullstack.education.projetolabpcp.infra.exception.MateriaByIdNotFoundException;
+import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,51 +27,81 @@ public class MateriaServiceImpl implements MateriaService {
     }
 
     @Override
-    public List<MateriaEntity> buscarTodos() {
+    public List<MateriaResponse> buscarTodos() {
+        List<MateriaEntity> materias = materiaRepository.findAll();
+        if (materias.isEmpty()) {
+            throw new NotFoundException("Não há matérias cadastradas");
+        }
 
-        return materiaRepository.findAll();
+        return materias.stream().map(
+                t-> new MateriaResponse(t.getId(), t.getNome(), t.getCurso().getId())
+        ).toList();
     }
 
     @Override
-    public MateriaEntity buscarPorId(Long id) {
+    public MateriaResponse buscarPorId(Long id) {
 
-        return materiaRepository.findById(id)
-                .orElseThrow(() -> new MateriaByIdNotFoundException(id));
+        MateriaEntity materia = materiaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Matéria não encontrada com id:" + id) );
+
+        return new MateriaResponse(id, materia.getNome(), materia.getCurso().getId());
     }
 
     @Override
-    public MateriaEntity criar(MateriaEntity entity, String token) {
+    public MateriaResponse criar(MateriaRequest materiaRequest, String token) {
 
         // Pega id do token para mais tarde validar o usuário
         Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
 
         // cria curso que será vinculado ao materia
-        CursoEntity materiaCurso = cursoRepository.findById(entity.getCurso().getId())
-                .orElseThrow(() -> new RuntimeException("Curso não encontrado"));
+        CursoEntity materiaCurso = cursoRepository.findById(materiaRequest.getId_curso())
+                .orElseThrow(() -> new NotFoundException("Curso não encontrado com id:" + materiaRequest.getId_curso()));
 
-        entity.setId(null); // garante que novo Id vai ser criado
-        entity.setCurso(materiaCurso); // Faz o link do curso com o materia
-        return materiaRepository.save(entity);
+        MateriaEntity materia = new MateriaEntity();
+        materia.setId(null); // garante que novo Id vai ser criado
+        materia.setNome(materiaRequest.getNome());
+        materia.setCurso(materiaCurso); // Faz o link do curso com o materia
+        materiaRepository.save(materia);
+
+        return new MateriaResponse(materia.getId(), materia.getNome(), materia.getCurso().getId());
     }
 
     @Override
-    public MateriaEntity alterar(Long id, MateriaEntity entity) {
+    public MateriaResponse alterar(Long id, MateriaRequest materiaRequest) {
         buscarPorId(id); // Verifica a existência do Materia.
-        entity.setId(id); // Assegura que a alteração será no Materia correto.
-        return materiaRepository.save(entity);
+
+        // cria curso que será vinculado ao materia
+        CursoEntity materiaCurso = cursoRepository.findById(materiaRequest.getId_curso())
+                .orElseThrow(() -> new NotFoundException("Curso não encontrado com id:" + materiaRequest.getId_curso()));
+
+
+        MateriaEntity materia = new MateriaEntity();
+        materia.setId(id); // Assegura que a alteração será no Materia correto.
+        materia.setNome(materiaRequest.getNome());
+        materia.setCurso(materiaCurso);
+        materiaRepository.save(materia);
+
+        return new MateriaResponse(id, materia.getNome(), materia.getCurso().getId());
     }
 
     @Override
     public void excluir(Long id) {
-        MateriaEntity entity = buscarPorId(id); // Verifica se o Materia existe antes de excluir.
-        materiaRepository.delete(entity);
+        MateriaEntity materia = materiaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Matéria não encontrada com id:" + id)); // Verifica se o Materia existe antes de excluir.
+        materiaRepository.delete(materia);
     }
 
     @Override
-    public List<MateriaEntity> buscarPorCursoId(Long idCurso) {
+    public List<MateriaResponse> buscarPorCursoId(Long idCurso) {
+
         if (!cursoRepository.existsById(idCurso)) {
-            throw new CursoByIdNotFoundException(idCurso);
+            throw new NotFoundException("Não há matérias cadastradas para o curso com id:" + idCurso);
         }
-        return materiaRepository.findByCursoId(idCurso);
+
+        List<MateriaEntity> materias =  materiaRepository.findByCursoId(idCurso);
+
+        return materias.stream().map(
+                t-> new MateriaResponse(t.getId(), t.getNome(), t.getCurso().getId())
+        ).toList();
     }
 }

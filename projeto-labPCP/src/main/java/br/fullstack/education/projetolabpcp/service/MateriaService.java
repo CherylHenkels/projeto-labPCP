@@ -1,20 +1,22 @@
 package br.fullstack.education.projetolabpcp.service;
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.MateriaRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.MateriaResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.MateriaEntity;
 
 import java.util.List;
 
 public interface MateriaService {
 
-    List<MateriaEntity> buscarTodos();
+    List<MateriaResponse> buscarTodos();
 
-    MateriaEntity buscarPorId(Long id);
+    MateriaResponse buscarPorId(Long id);
 
-    MateriaEntity criar(MateriaEntity entity, String token);
+    MateriaResponse criar(MateriaRequest materiaRequest, String token);
 
-    MateriaEntity alterar(Long id, MateriaEntity entity);
+    MateriaResponse alterar(Long id, MateriaRequest materiaRequest);
 
     void excluir(Long id);
 
-    List<MateriaEntity> buscarPorCursoId(Long idCurso);
+    List<MateriaResponse> buscarPorCursoId(Long idCurso);
 }

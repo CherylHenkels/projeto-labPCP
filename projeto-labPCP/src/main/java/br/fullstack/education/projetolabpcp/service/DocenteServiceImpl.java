@@ -56,7 +56,7 @@ public class DocenteServiceImpl implements DocenteService {
 
         // cria usuario que será vinculado ao docente
         UsuarioEntity docenteUsuario = usuarioRepository.findById(docenteRequest.getId_usuario())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com id:" + docenteRequest.getId_usuario()));
 
         //cria DocenteEntity
         DocenteEntity docente =  new DocenteEntity();
@@ -74,7 +74,7 @@ public class DocenteServiceImpl implements DocenteService {
 
         // cria usuario que será vinculado ao docente
         UsuarioEntity docenteUsuario = usuarioRepository.findById(docenteRequest.getId_usuario())
-                .orElseThrow(() -> new NotFoundException("Usuário com id=" + docenteRequest.getId_usuario()+ " não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com id:" + docenteRequest.getId_usuario()));
 
         //cria DocenteEntity para salvar novos dados
         DocenteEntity docente = new DocenteEntity();

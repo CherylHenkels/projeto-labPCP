@@ -1,6 +1,8 @@
 package br.fullstack.education.projetolabpcp.controller;
 
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.TurmaRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.TurmaResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.TurmaEntity;
 import br.fullstack.education.projetolabpcp.infra.utils.JsonUtil;
 import br.fullstack.education.projetolabpcp.service.TurmaService;
@@ -23,9 +25,9 @@ public class TurmaController {
 
 
     @GetMapping
-    public ResponseEntity<List<TurmaEntity>> buscarTodos() {
+    public ResponseEntity<List<TurmaResponse>> buscarTodos() {
         log.info("GET /turmas -> Início");
-        List<TurmaEntity> turmas = service.buscarTodos();
+        List<TurmaResponse> turmas = service.buscarTodos();
         log.info("GET /turmas -> Encontrados {} registros", turmas.size());
         log.info("GET /turmas -> 200 OK");
         log.debug("GET /turmas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(turmas));
@@ -34,10 +36,10 @@ public class TurmaController {
 
 
     @GetMapping("{id}")
-    public ResponseEntity<TurmaEntity> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<TurmaResponse> buscarPorId(@PathVariable Long id) {
         log.info("GET /turmas/{} -> Início" , id );
-        TurmaEntity turma = service.buscarPorId(id);
-        log.info("GET /turmas/{} -> Encontrado", id);
+        TurmaResponse turma = service.buscarPorId(id);
+        log.info("GET /turmas/{} -> Turma encontrada", id);
         log.info("GET /turmas/{} -> 200 OK", id);
         log.debug("GET /turmas/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(turma));
         return ResponseEntity.status(HttpStatus.OK).body(turma);
@@ -45,11 +47,11 @@ public class TurmaController {
 
 
     @PostMapping
-    public ResponseEntity<TurmaEntity> criarTurma(@RequestHeader(name = "Authorization") String token,
-                                                      @RequestBody TurmaEntity turmaRequest) {
-        log.info("POST /turmas");
-        TurmaEntity turma = service.criar(turmaRequest, token.substring(7));
-        log.info("POST /turmas -> Cadastrado");
+    public ResponseEntity<TurmaResponse> criarTurma(@RequestHeader(name = "Authorization") String token,
+                                                      @RequestBody TurmaRequest turmaRequest) {
+        log.info("POST /turmas -> Início");
+        TurmaResponse turma = service.criar(turmaRequest, token.substring(7));
+        log.info("POST /turmas -> Turma cadastrada");
         log.info("POST /turmas -> 201 CREATED");
         log.debug("POST /turmas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(turmaRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(turma);
@@ -57,21 +59,21 @@ public class TurmaController {
 
 
     @PutMapping("{id}")
-    public ResponseEntity<TurmaEntity> alterarTurma(@PathVariable Long id, @RequestBody TurmaEntity turmaRequest) {
+    public ResponseEntity<TurmaResponse> alterarTurma(@PathVariable Long id, @RequestBody TurmaRequest turmaRequest) {
         log.info("PUT /turmas/{} -> Início", id);
-        TurmaEntity turma = service.alterar(id, turmaRequest);
-        log.info("PUT /turmas/{} -> Atualizado com sucesso", id);
+        TurmaResponse turma = service.alterar(id, turmaRequest);
+        log.info("PUT /turmas/{} -> Turma atualizada com sucesso", id);
         log.info("PUT /turmas/{} -> 200 OK", id);
         log.debug("PUT /turmas/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(turmaRequest));
-        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(id, turma));
+        return ResponseEntity.status(HttpStatus.OK).body(turma);
     }
 
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletarTurma(@PathVariable Long id) {
-        log.info("DELETE /turmas/{}", id);
+        log.info("DELETE /turmas/{} -> Início", id);
         service.excluir(id);
-        log.info("DELETE /turmas/{} -> Excluído", id);
+        log.info("DELETE /turmas/{} -> Turma excluída com sucesso", id);
         log.info("DELETE /turmas/{} -> 204 NO CONTENT", id);
         return ResponseEntity.noContent().build();
     }

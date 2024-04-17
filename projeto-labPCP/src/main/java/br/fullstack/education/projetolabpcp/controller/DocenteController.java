@@ -53,7 +53,7 @@ public class DocenteController {
         DocenteResponse docente = service.criar(docenteRequest, token.substring(7));
         log.info("POST /docentes -> Docente criado com sucesso");
         log.info("POST /docentes -> 201 CREATED");
-        log.debug("POST /docentes -> Response Body:\n{}\n", JsonUtil.objetoParaJson(docenteRequest));
+        log.debug("POST /docentes -> Response Body:\n{}\n", JsonUtil.objetoParaJson(docente));
         return ResponseEntity.status(HttpStatus.CREATED).body(docente);
     }
 
@@ -64,8 +64,8 @@ public class DocenteController {
         DocenteResponse docente = service.alterar(id, docenteRequest);
         log.info("PUT /docentes/{} -> Docente atualizado com sucesso", id);
         log.info("PUT /docentes/{} -> 200 OK", id);
-        log.debug("PUT /docentes/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(docenteRequest));
-        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(id, docenteRequest));
+        log.debug("PUT /docentes/{} -> Response Body:\n{}\n", id, JsonUtil.objetoParaJson(docente));
+        return ResponseEntity.status(HttpStatus.OK).body(docente);
     }
 
 

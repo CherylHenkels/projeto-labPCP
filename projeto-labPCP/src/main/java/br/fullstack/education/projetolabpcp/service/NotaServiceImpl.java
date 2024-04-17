@@ -1,5 +1,7 @@
 package br.fullstack.education.projetolabpcp.service;
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.NotaRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.NotaResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.DocenteEntity;
 import br.fullstack.education.projetolabpcp.datasource.entity.MateriaEntity;
 import br.fullstack.education.projetolabpcp.datasource.entity.NotaEntity;
@@ -9,6 +11,7 @@ import br.fullstack.education.projetolabpcp.datasource.repository.MateriaReposit
 import br.fullstack.education.projetolabpcp.datasource.repository.NotaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.AlunoRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.CursoByIdNotFoundException;
+import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotaByIdNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -32,61 +35,104 @@ public class NotaServiceImpl implements NotaService {
     }
 
     @Override
-    public List<NotaEntity> buscarTodos() {
+    public List<NotaResponse> buscarTodos() {
+        List<NotaEntity> notas = notaRepository.findAll();
 
-        return notaRepository.findAll();
+        if (notas.isEmpty()) {
+            throw new NotFoundException("Não há notas cadastradas");
+        }
+
+        return notas.stream().map(
+                t -> new NotaResponse(t.getId(), t.getValor(), t.getData(),
+                        t.getAluno().getId(), t.getDocente().getId(), t.getMateria().getId())
+        ).toList();
     }
 
     @Override
-    public NotaEntity buscarPorId(Long id) {
+    public NotaResponse buscarPorId(Long id) {
 
-        return notaRepository.findById(id)
-                .orElseThrow(() -> new NotaByIdNotFoundException(id));
+        NotaEntity nota = notaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Nota não encontrada com id:" + id) );
+
+        return new NotaResponse(nota.getId(), nota.getValor(), nota.getData(),
+                nota.getAluno().getId(), nota.getDocente().getId(), nota.getMateria().getId());
     }
 
     @Override
-    public NotaEntity criar(NotaEntity entity, String token) {
+    public NotaResponse criar(NotaRequest notaRequest, String token) {
 
         // Pega id do token para mais tarde validar o usuário
         Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
 
         // cria aluno que será vinculado a nota
-        AlunoEntity notaAluno = alunoRepository.findById(entity.getAluno().getId())
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+        AlunoEntity notaAluno = alunoRepository.findById(notaRequest.getId_aluno())
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado com id:" + notaRequest.getId_aluno()));
 
         // cria docente que será vinculado a nota
-        DocenteEntity notaDocente = docenteRepository.findById(entity.getDocente().getId())
-                .orElseThrow(() -> new RuntimeException("Docente não encontrado"));
+        DocenteEntity notaDocente = docenteRepository.findById(notaRequest.getId_docente())
+                .orElseThrow(() -> new NotFoundException("Docente não encontrado com id:" + notaRequest.getId_docente()));
 
         // cria materia que será vinculada a nota
-        MateriaEntity notaMateria = materiaRepository.findById(entity.getMateria().getId())
-                .orElseThrow(() -> new RuntimeException("Materia não encontrada"));
+        MateriaEntity notaMateria = materiaRepository.findById(notaRequest.getId_materia())
+                .orElseThrow(() -> new NotFoundException("Materia não encontrada com id:" + notaRequest.getId_materia()));
 
-        entity.setId(null); // garante que novo Id vai ser criado
-        entity.setAluno(notaAluno); // Faz o link do aluno com a nota
-        entity.setDocente(notaDocente); // Faz o link do docente com a nota
-        entity.setMateria(notaMateria); // Faz o link da materia com a nota
-        return notaRepository.save(entity);
+        NotaEntity nota = new NotaEntity();
+        nota.setId(null); // garante que novo Id vai ser criado
+        nota.setValor(notaRequest.getValor());
+        nota.setAluno(notaAluno); // Faz o link do aluno com a nota
+        nota.setDocente(notaDocente); // Faz o link do docente com a nota
+        nota.setMateria(notaMateria); // Faz o link da materia com a nota
+        notaRepository.save(nota);
+
+        return new NotaResponse(nota.getId(), nota.getValor(), nota.getData(),
+                nota.getAluno().getId(), nota.getDocente().getId(), nota.getMateria().getId());
     }
 
     @Override
-    public NotaEntity alterar(Long id, NotaEntity entity) {
+    public NotaResponse alterar(Long id, NotaRequest notaRequest) {
         buscarPorId(id); // Verifica a existência do Nota.
-        entity.setId(id); // Assegura que a alteração será no Nota correto.
-        return notaRepository.save(entity);
+
+        // cria aluno que será vinculado a nota
+        AlunoEntity notaAluno = alunoRepository.findById(notaRequest.getId_aluno())
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado com id:" + notaRequest.getId_aluno()));
+
+        // cria docente que será vinculado a nota
+        DocenteEntity notaDocente = docenteRepository.findById(notaRequest.getId_docente())
+                .orElseThrow(() -> new NotFoundException("Docente não encontrado com id:" + notaRequest.getId_docente()));
+
+        // cria materia que será vinculada a nota
+        MateriaEntity notaMateria = materiaRepository.findById(notaRequest.getId_materia())
+                .orElseThrow(() -> new NotFoundException("Materia não encontrada com id:" + notaRequest.getId_materia()));
+
+        NotaEntity nota = new NotaEntity();
+        nota.setId(id);
+        nota.setValor(notaRequest.getValor());
+        nota.setAluno(notaAluno);
+        nota.setDocente(notaDocente);
+        nota.setMateria(notaMateria);
+        notaRepository.save(nota);
+
+        return new NotaResponse(nota.getId(), nota.getValor(), nota.getData(),
+                nota.getAluno().getId(), nota.getDocente().getId(), nota.getMateria().getId());
     }
 
     @Override
     public void excluir(Long id) {
-        NotaEntity entity = buscarPorId(id); // Verifica se o Nota existe antes de excluir.
-        notaRepository.delete(entity);
+        NotaEntity nota = notaRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Nota não encontrada com id:" + id)); // Verifica se o Nota existe antes de excluir.
+        notaRepository.delete(nota);
     }
 
     @Override
-    public List<NotaEntity> buscarPorAlunoId(Long idAluno) {
+    public List<NotaResponse> buscarPorAlunoId(Long idAluno) {
         if (!alunoRepository.existsById(idAluno)) {
-            throw new NotaByIdNotFoundException(idAluno);
+            throw new NotFoundException("Não há notas cadastradas para o aluno com id:" + idAluno);
         }
-        return notaRepository.findByAlunoId(idAluno);
+
+        List<NotaEntity> notas = notaRepository.findByAlunoId(idAluno);
+        return notas.stream().map(
+                t -> new NotaResponse(t.getId(), t.getValor(), t.getData(),
+                        t.getAluno().getId(), t.getDocente().getId(), t.getMateria().getId())
+        ).toList() ;
     }
 }

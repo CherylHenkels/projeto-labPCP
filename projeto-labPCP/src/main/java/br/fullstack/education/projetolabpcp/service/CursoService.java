@@ -1,5 +1,7 @@
 package br.fullstack.education.projetolabpcp.service;
 
+import br.fullstack.education.projetolabpcp.controller.dto.request.CursoRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.CursoResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.CursoEntity;
 import br.fullstack.education.projetolabpcp.datasource.entity.MateriaEntity;
 
@@ -7,13 +9,13 @@ import java.util.List;
 
 public interface CursoService {
 
-    List<CursoEntity> buscarTodos();
+    List<CursoResponse> buscarTodos();
 
-    CursoEntity buscarPorId(Long id);
+    CursoResponse buscarPorId(Long id);
 
-    CursoEntity criar(CursoEntity entity, String token);
+    CursoResponse criar(CursoRequest cursoRequest, String token);
 
-    CursoEntity alterar(Long id, CursoEntity entity);
+    CursoResponse alterar(Long id, CursoRequest cursoRequest);
 
     void excluir(Long id);
 
