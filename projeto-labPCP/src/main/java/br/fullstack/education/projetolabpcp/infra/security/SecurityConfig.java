@@ -59,11 +59,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login", "/cadastro").permitAll() // todos os usuários precisam fazer login
                         .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADM")
-//                        .requestMatchers(HttpMethod.GET, "/alunos/{id}/pontuacao", "/alunos/{id_aluno}/notas").hasAuthority("ALUNO")
-//                        .requestMatchers("/notas/**").hasAuthority("PROFESSOR")
-//                        .requestMatchers("/docentes/**").hasAnyAuthority("ADM", "PEDAGOGICO", "RECRUITER")
-//                        .requestMatchers("/cursos/**", "/turmas/**", "/materias/**").hasAnyAuthority("ADM", "PEDAGOGICO")
-//                        .requestMatchers("/**").hasAnyAuthority("ADM", "PEDAGOGICO") // General access for ADM and PEDAGOGICO to all paths, except where more restrictive rules apply
+                        .requestMatchers(HttpMethod.GET, "/alunos/{id}/pontuacao", "/alunos/{id_aluno}/notas").hasAnyRole("ALUNO", "ADM", "PEDAGOGICO", "PROFESSOR")
+                        .requestMatchers("/notas/**").hasAnyRole("PROFESSOR", "ADM", "PEDAGOGICO")
+                        .requestMatchers("/docentes/**").hasAnyRole("ADM", "PEDAGOGICO", "RECRUITER")
+                       .requestMatchers("/cursos/**", "/turmas/**", "/materias/**").hasAnyRole("ADM", "PEDAGOGICO")
+                        .requestMatchers("/**").hasAnyRole("ADM", "PEDAGOGICO") // General access for ADM and PEDAGOGICO to all paths, except where more restrictive rules apply
 //
 
                         .anyRequest().authenticated() // pede autenticação para todos os endpoints que não foram permitidos
