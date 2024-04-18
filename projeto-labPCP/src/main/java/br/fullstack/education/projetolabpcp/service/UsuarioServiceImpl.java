@@ -5,12 +5,15 @@ import br.fullstack.education.projetolabpcp.controller.dto.response.InserirUsuar
 import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.PapelRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
+import br.fullstack.education.projetolabpcp.infra.exception.InvalidCredentialsException;
 import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +22,21 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final BCryptPasswordEncoder bCryptEncoder;
     private final UsuarioRepository usuarioRepository;
     private final PapelRepository papelRepository;
+    private final TokenService tokenService;
 
     @Override
     public InserirUsuarioResponse cadastraNovoUsuario(
-            @RequestBody InserirUsuarioRequest inserirUsuarioRequest
+            @RequestBody InserirUsuarioRequest inserirUsuarioRequest,
+            String token
     ) {
+        //Valida se perfil tem acesso a funcionalidade
+        String nomePerfil =  tokenService.buscaCampo(token, "scope");
+        System.out.println(nomePerfil);
+        if (Objects.equals(nomePerfil, "PEDAGOGICO") || Objects.equals(nomePerfil, "RECRUITER")
+        || Objects.equals(nomePerfil, "PROFESSOR") || Objects.equals(nomePerfil, "ALUNO")){
+            throw new InvalidCredentialsException(nomePerfil + " não tem acesso a essa funcionalidade");
+        }
+
         if (inserirUsuarioRequest.usuario() == null || inserirUsuarioRequest.usuario().trim().isEmpty()) {
             throw new InvalidRequestException("Nome do usuário é obrigatório");
         }

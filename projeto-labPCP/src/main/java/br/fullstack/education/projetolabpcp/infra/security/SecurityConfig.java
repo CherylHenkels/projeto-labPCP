@@ -21,10 +21,15 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration //indica uma classe de configuração do Spring,
 // essa classe irá conter @Bean -> é uma classe criada apenas uma vez dentro do spring
@@ -52,20 +57,31 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll() // permite os endpoints que tenham o texto que condiz com /login
-                        .requestMatchers(HttpMethod.POST, "/cadastro").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/cadastro").permitAll() // todos os usuários precisam fazer login
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADM")
+//                        .requestMatchers(HttpMethod.GET, "/alunos/{id}/pontuacao", "/alunos/{id_aluno}/notas").hasAuthority("ALUNO")
+//                        .requestMatchers("/notas/**").hasAuthority("PROFESSOR")
+//                        .requestMatchers("/docentes/**").hasAnyAuthority("ADM", "PEDAGOGICO", "RECRUITER")
+//                        .requestMatchers("/cursos/**", "/turmas/**", "/materias/**").hasAnyAuthority("ADM", "PEDAGOGICO")
+//                        .requestMatchers("/**").hasAnyAuthority("ADM", "PEDAGOGICO") // General access for ADM and PEDAGOGICO to all paths, except where more restrictive rules apply
+//
+
                         .anyRequest().authenticated() // pede autenticação para todos os endpoints que não foram permitidos
                 )
-                .csrf(AbstractHttpConfigurer::disable) // desabilita o CSRF, ele bloqueia alguns tipos de chamadas por padrão
-                .oauth2ResourceServer(oath2 ->
-                        oath2.jwt(Customizer.withDefaults()) // configurar o JWT com os padrões de projeto -> os beans JwtDecoder e JwtEncoder
-                ) // configurar esse programa como um Servidor de Recursos OAuth2
-                // filtro adicionado a cadeia de filtros do Spring Security
+
+
+                .csrf(AbstractHttpConfigurer::disable)       // desabilita o CSRF, ele bloqueia alguns tipos de chamadas por padrão
+//                .oauth2ResourceServer(oath2 ->
+//                        oath2.jwt(Customizer.withDefaults()) // configurar o JWT com os padrões de projeto -> os beans JwtDecoder e JwtEncoder
+//                )                                            // configurar esse programa como um Servidor de Recursos OAuth2
+                                                             // filtro adicionado a cadeia de filtros do Spring Security
+
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
 
                 .sessionManagement(session ->  // sessão é uma forma de manter um usuário logado
                                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        // indica que o sistema nunca fica logado, ele depende do token para validar um acesso
-                )
+                )        // indica que o sistema nunca fica logado, ele depende do token para validar um acesso
+
         ;
 
         return http.build(); // Gera um tipo para o SecurityFilterChain, ele preenche a Chain
@@ -99,6 +115,23 @@ public class SecurityConfig {
     // Vai ser usado para encriptar as senhas antes de salvá-las no banco de dados
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder(); // codifica, ou criptografar, senhas com o software BCrypt
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+        // Set a custom JwtGrantedAuthoritiesConverter to handle the extraction and conversion of authorities
+        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            // Extract the scope claim where the roles are stored
+            String scope = jwt.getClaimAsString("scope");
+            // Split the scope into individual authorities, assuming they are space-separated
+            List<String> authorities = Arrays.asList(scope.split(" "));
+            // Stream and map each authority to a Spring Security GrantedAuthority, prefixing if necessary
+            return authorities.stream()
+                    .map(authority -> new SimpleGrantedAuthority("ROLE_" + authority.toUpperCase())) // Prefix with ROLE_ if your application needs it
+                    .collect(Collectors.toList());
+        });
+        return jwtConverter;
     }
 
 

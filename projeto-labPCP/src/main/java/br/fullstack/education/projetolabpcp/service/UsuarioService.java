@@ -7,6 +7,6 @@ import br.fullstack.education.projetolabpcp.controller.dto.response.InserirUsuar
 
 public interface UsuarioService {
 
-    InserirUsuarioResponse cadastraNovoUsuario(InserirUsuarioRequest inserirUsuarioRequest);
+    InserirUsuarioResponse cadastraNovoUsuario(InserirUsuarioRequest inserirUsuarioRequest, String token);
 
 }
