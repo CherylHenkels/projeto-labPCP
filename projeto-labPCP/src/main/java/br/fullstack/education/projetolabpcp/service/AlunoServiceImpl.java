@@ -9,11 +9,14 @@ import br.fullstack.education.projetolabpcp.datasource.repository.TurmaRepositor
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.AlunoByIdNotFoundException;
 import br.fullstack.education.projetolabpcp.datasource.repository.AlunoRepository;
+import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AlunoServiceImpl implements AlunoService {
 
@@ -36,6 +39,7 @@ public class AlunoServiceImpl implements AlunoService {
         List<AlunoEntity> alunos = alunoRepository.findAll();
 
         if (alunos.isEmpty()) {
+            log.error("404 NOT FOUND -> Não há alunos cadastrados.");
             throw new NotFoundException("Não há alunos cadastrados.");
         }
 
@@ -48,7 +52,9 @@ public class AlunoServiceImpl implements AlunoService {
     public AlunoResponse buscarPorId(Long id) {
 
         AlunoEntity aluno = alunoRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Aluno não encontrado com id:" + id));
+                .orElseThrow(()-> {
+                    log.error("404 NOT FOUND -> Aluno não encontrado com id: {}" , id);
+                    return new NotFoundException("Aluno não encontrado com id:" + id);});
 
         return new AlunoResponse(aluno.getId(), aluno.getNome(), aluno.getDataNascimento(),aluno.getUsuario().getId(), aluno.getTurma().getId());
     }
@@ -59,13 +65,34 @@ public class AlunoServiceImpl implements AlunoService {
         // Pega id do token para mais tarde validar o usuário
         Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
 
+        if (alunoRequest.getNome() == null || alunoRequest.getNome().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Nome do aluno é obrigatório");
+            throw new InvalidRequestException("Nome do aluno é obrigatório");
+        }
+        if (alunoRequest.getDataNascimento() == null ) {
+            log.error("400 BAD REQUEST -> Data de nascimento do aluno é obrigatória");
+            throw new InvalidRequestException("Data de nascimento do aluno é obrigatória");
+        }
+        if (alunoRequest.getId_usuario() == null ) {
+            log.error("400 BAD REQUEST -> Id do usuario é obrigatório");
+            throw new InvalidRequestException("Id do usuario é obrigatório");
+        }
+        if (alunoRequest.getId_turma() == null ) {
+            log.error("400 BAD REQUEST -> Id da turma é obrigatório");
+            throw new InvalidRequestException("Id da turma é obrigatório");
+        }
+
         // cria usuario que será vinculado ao aluno
         UsuarioEntity alunoUsuario = usuarioRepository.findById(alunoRequest.getId_usuario())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com id:" + alunoRequest.getId_usuario()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND ->Usuário não encontrado com id: {}" , alunoRequest.getId_usuario());
+                    return new NotFoundException("Usuário não encontrado com id:" + alunoRequest.getId_usuario());});
 
         // cria turma que será vinculado ao aluno
         TurmaEntity alunoTurma = turmaRepository.findById(alunoRequest.getId_turma())
-                .orElseThrow(() -> new NotFoundException("Turma não encontrada com id:" + alunoRequest.getId_turma()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Turma não encontrada com id: {}" , alunoRequest.getId_turma());
+                    return new NotFoundException("Turma não encontrada com id:" + alunoRequest.getId_turma());});
 
         AlunoEntity aluno = new AlunoEntity();
         aluno.setId(null); // Garante que um novo ID será gerado.
@@ -83,13 +110,34 @@ public class AlunoServiceImpl implements AlunoService {
     public AlunoResponse alterar(Long id, AlunoRequest alunoRequest) {
         buscarPorId(id); // Verifica a existência do Aluno.
 
+        if (alunoRequest.getNome() == null || alunoRequest.getNome().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Nome do aluno é obrigatório");
+            throw new InvalidRequestException("Nome do aluno é obrigatório");
+        }
+        if (alunoRequest.getDataNascimento() == null ) {
+            log.error("400 BAD REQUEST -> Data de nascimento do aluno é obrigatória");
+            throw new InvalidRequestException("Data de nascimento do aluno é obrigatória");
+        }
+        if (alunoRequest.getId_usuario() == null ) {
+            log.error("400 BAD REQUEST -> Id do usuario é obrigatório");
+            throw new InvalidRequestException("Id do usuario é obrigatório");
+        }
+        if (alunoRequest.getId_turma() == null ) {
+            log.error("400 BAD REQUEST -> Id da turma é obrigatório");
+            throw new InvalidRequestException("Id da turma é obrigatório");
+        }
+
         // cria usuario que será vinculado ao aluno
         UsuarioEntity alunoUsuario = usuarioRepository.findById(alunoRequest.getId_usuario())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com id:" + alunoRequest.getId_usuario()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND ->Usuário não encontrado com id: {}" , alunoRequest.getId_usuario());
+                    return new NotFoundException("Usuário não encontrado com id:" + alunoRequest.getId_usuario());});
 
         // cria turma que será vinculado ao aluno
         TurmaEntity alunoTurma = turmaRepository.findById(alunoRequest.getId_turma())
-                .orElseThrow(() -> new NotFoundException("Turma não encontrada com id:" + alunoRequest.getId_turma()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Turma não encontrada com id: {}" , alunoRequest.getId_turma());
+                    return new NotFoundException("Turma não encontrada com id:" + alunoRequest.getId_turma());});
 
         AlunoEntity aluno = new AlunoEntity();
         aluno.setId(id);
@@ -106,7 +154,9 @@ public class AlunoServiceImpl implements AlunoService {
     @Override
     public void excluir(Long id) {
         AlunoEntity aluno = alunoRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Aluno não encontrado com id:" + id)); // Verifica se o Aluno existe antes de excluir.
+                .orElseThrow(()-> {
+                    log.error("404 NOT FOUND -> Aluno não encontrado com id: {}" , id);
+                    return new NotFoundException("Aluno não encontrado com id:" + id);}); // Verifica se o Aluno existe antes de excluir.
         alunoRepository.delete(aluno);
     }
 

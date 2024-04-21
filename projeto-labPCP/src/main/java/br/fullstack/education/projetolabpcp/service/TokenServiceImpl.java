@@ -37,9 +37,11 @@ public class TokenServiceImpl implements TokenService {
     ){
 
         if (loginRequest.usuario() == null || loginRequest.usuario().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Nome do usuário é obrigatório");
             throw new InvalidRequestException("Nome do usuário é obrigatório");
         }
         if (loginRequest.senha() == null || loginRequest.senha().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Senha é obrigatória");
             throw new InvalidRequestException("Senha é obrigatória");
         }
 
@@ -47,13 +49,13 @@ public class TokenServiceImpl implements TokenService {
                 .findByNomeUsuario(loginRequest.usuario()) // busca dados de usuario pelo nome do usuario
                 .orElseThrow(                                  // caso usuario não exista, gera um erro
                         ()->{
-                            log.error("Usuário não existe");
+                            log.error("404 NOT FOUND -> Usuário não existe");
                             return new NotFoundException("Usuário não existe");
                         }
                 );
 
         if(!usuarioEntity.senhaValida(loginRequest, bCryptEncoder)){ // valida se a senha recebida é a mesma que foi salva com BCrypt
-            log.error("401 UNAUTHORIZED - Senha incorreta");                      // caso senha não bata, gera um erro
+            log.error("401 UNAUTHORIZED -> Senha incorreta");                      // caso senha não bata, gera um erro
             throw new InvalidCredentialsException("Senha incorreta");
         }
 
