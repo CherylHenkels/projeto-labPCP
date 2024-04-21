@@ -16,8 +16,7 @@ CREATE TABLE IF NOT EXISTS docentes (
     id BIGSERIAL PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     data_entrada DATE NOT NULL DEFAULT CURRENT_DATE,
-    id_usuario BIGINT NOT NULL,
-    UNIQUE (id_usuario),
+    id_usuario BIGINT UNIQUE NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 

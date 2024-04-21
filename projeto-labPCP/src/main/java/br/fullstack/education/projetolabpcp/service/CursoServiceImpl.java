@@ -7,11 +7,14 @@ import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.CursoRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.CursoByIdNotFoundException;
+import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class CursoServiceImpl implements CursoService {
 
@@ -30,6 +33,7 @@ public class CursoServiceImpl implements CursoService {
         List<CursoEntity> cursos = cursoRepository.findAll();
 
         if (cursos.isEmpty()) {
+            log.error("404 NOT FOUND -> Não há cursos cadastrados.");
             throw new NotFoundException("Não há cursos cadastrados.");
         }
 
@@ -42,7 +46,9 @@ public class CursoServiceImpl implements CursoService {
     public CursoResponse buscarPorId(Long id) {
 
         CursoEntity curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Curso não encontrado com id:" + id ));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Curso não encontrado com id: {}" , id);
+                    return new NotFoundException("Curso não encontrado com id:" + id );});
 
         return new CursoResponse(curso.getId(), curso.getNome());
     }
@@ -52,6 +58,12 @@ public class CursoServiceImpl implements CursoService {
 
         // Pega id do token para mais tarde validar o usuário
         Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
+
+        if (cursoRequest.getNome() == null || cursoRequest.getNome().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Nome do curso é obrigatório");
+            throw new InvalidRequestException("Nome do curso é obrigatório");
+        }
+
 
         CursoEntity curso = new CursoEntity();
         curso.setId(null); // garante que novo Id vai ser criado
@@ -65,6 +77,11 @@ public class CursoServiceImpl implements CursoService {
     public CursoResponse alterar(Long id, CursoRequest cursoRequest) {
         buscarPorId(id); // Verifica a existência do Curso.
 
+        if (cursoRequest.getNome() == null || cursoRequest.getNome().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Nome do curso é obrigatório");
+            throw new InvalidRequestException("Nome do curso é obrigatório");
+        }
+
         //cria CursoEntity para salvar novos dados
         CursoEntity curso = new CursoEntity();
         curso.setId(id); // Assegura que a alteração será no Curso correto.
@@ -77,7 +94,9 @@ public class CursoServiceImpl implements CursoService {
     @Override
     public void excluir(Long id) {
         CursoEntity entity = cursoRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Curso não encontrado com id:" + id )); // Verifica se o Curso existe antes de excluir.
+                .orElseThrow(()-> {
+                    log.error("404 NOT FOUND -> Curso não encontrado com id: {}" , id);
+                    return new NotFoundException("Curso não encontrado com id:" + id );}); // Verifica se o Curso existe antes de excluir.
         cursoRepository.delete(entity);
     }
 }

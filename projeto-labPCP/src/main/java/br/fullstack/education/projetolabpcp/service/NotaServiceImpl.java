@@ -11,12 +11,15 @@ import br.fullstack.education.projetolabpcp.datasource.repository.MateriaReposit
 import br.fullstack.education.projetolabpcp.datasource.repository.NotaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.AlunoRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.CursoByIdNotFoundException;
+import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotaByIdNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class NotaServiceImpl implements NotaService {
 
@@ -39,6 +42,7 @@ public class NotaServiceImpl implements NotaService {
         List<NotaEntity> notas = notaRepository.findAll();
 
         if (notas.isEmpty()) {
+            log.error("404 NOT FOUND -> Não há notas cadastradas");
             throw new NotFoundException("Não há notas cadastradas");
         }
 
@@ -52,7 +56,9 @@ public class NotaServiceImpl implements NotaService {
     public NotaResponse buscarPorId(Long id) {
 
         NotaEntity nota = notaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Nota não encontrada com id:" + id) );
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Nota não encontrada com id: {}" , id);
+                    return new NotFoundException("Nota não encontrada com id:" + id); });
 
         return new NotaResponse(nota.getId(), nota.getValor(), nota.getData(),
                 nota.getAluno().getId(), nota.getDocente().getId(), nota.getMateria().getId());
@@ -64,17 +70,40 @@ public class NotaServiceImpl implements NotaService {
         // Pega id do token para mais tarde validar o usuário
         Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
 
+        if (notaRequest.getValor() == null ) {
+            log.error("400 BAD REQUEST -> Valor da nota é obrigatório");
+            throw new InvalidRequestException("Valor da nota é obrigatório");
+        }
+        if (notaRequest.getId_docente() == null ) {
+            log.error("400 BAD REQUEST -> Id do docente é obrigatório");
+            throw new InvalidRequestException("Id do docente é obrigatório");
+        }
+        if (notaRequest.getId_materia() == null ) {
+            log.error("400 BAD REQUEST -> Id da materia é obrigatório");
+            throw new InvalidRequestException("Id da materia é obrigatório");
+        }
+        if (notaRequest.getId_aluno() == null ) {
+            log.error("400 BAD REQUEST -> Id do aluno é obrigatório");
+            throw new InvalidRequestException("Id do aluno é obrigatório");
+        }
+
         // cria aluno que será vinculado a nota
         AlunoEntity notaAluno = alunoRepository.findById(notaRequest.getId_aluno())
-                .orElseThrow(() -> new NotFoundException("Aluno não encontrado com id:" + notaRequest.getId_aluno()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Aluno não encontrado com id: {}" , notaRequest.getId_aluno());
+                    return new NotFoundException("Aluno não encontrado com id:" + notaRequest.getId_aluno());});
 
         // cria docente que será vinculado a nota
         DocenteEntity notaDocente = docenteRepository.findById(notaRequest.getId_docente())
-                .orElseThrow(() -> new NotFoundException("Docente não encontrado com id:" + notaRequest.getId_docente()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Docente não encontrado com id: {}" , notaRequest.getId_docente());
+                    return new NotFoundException("Docente não encontrado com id:" + notaRequest.getId_docente());});
 
         // cria materia que será vinculada a nota
         MateriaEntity notaMateria = materiaRepository.findById(notaRequest.getId_materia())
-                .orElseThrow(() -> new NotFoundException("Materia não encontrada com id:" + notaRequest.getId_materia()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Materia não encontrada com id: {}" , notaRequest.getId_materia());
+                    return new NotFoundException("Materia não encontrada com id:" + notaRequest.getId_materia());});
 
         NotaEntity nota = new NotaEntity();
         nota.setId(null); // garante que novo Id vai ser criado
@@ -92,17 +121,40 @@ public class NotaServiceImpl implements NotaService {
     public NotaResponse alterar(Long id, NotaRequest notaRequest) {
         buscarPorId(id); // Verifica a existência do Nota.
 
+        if (notaRequest.getValor() == null ) {
+            log.error("400 BAD REQUEST -> Valor da nota é obrigatório");
+            throw new InvalidRequestException("Valor da nota é obrigatório");
+        }
+        if (notaRequest.getId_docente() == null ) {
+            log.error("400 BAD REQUEST -> Id do docente é obrigatório");
+            throw new InvalidRequestException("Id do docente é obrigatório");
+        }
+        if (notaRequest.getId_materia() == null ) {
+            log.error("400 BAD REQUEST -> Id da materia é obrigatório");
+            throw new InvalidRequestException("Id da materia é obrigatório");
+        }
+        if (notaRequest.getId_aluno() == null ) {
+            log.error("400 BAD REQUEST -> Id do aluno é obrigatório");
+            throw new InvalidRequestException("Id do aluno é obrigatório");
+        }
+
         // cria aluno que será vinculado a nota
         AlunoEntity notaAluno = alunoRepository.findById(notaRequest.getId_aluno())
-                .orElseThrow(() -> new NotFoundException("Aluno não encontrado com id:" + notaRequest.getId_aluno()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Aluno não encontrado com id: {}" , notaRequest.getId_aluno());
+                    return new NotFoundException("Aluno não encontrado com id:" + notaRequest.getId_aluno());});
 
         // cria docente que será vinculado a nota
         DocenteEntity notaDocente = docenteRepository.findById(notaRequest.getId_docente())
-                .orElseThrow(() -> new NotFoundException("Docente não encontrado com id:" + notaRequest.getId_docente()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Docente não encontrado com id: {}" , notaRequest.getId_docente());
+                    return new NotFoundException("Docente não encontrado com id:" + notaRequest.getId_docente());});
 
         // cria materia que será vinculada a nota
         MateriaEntity notaMateria = materiaRepository.findById(notaRequest.getId_materia())
-                .orElseThrow(() -> new NotFoundException("Materia não encontrada com id:" + notaRequest.getId_materia()));
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Materia não encontrada com id: {}" , notaRequest.getId_materia());
+                    return new NotFoundException("Materia não encontrada com id:" + notaRequest.getId_materia());});
 
         NotaEntity nota = new NotaEntity();
         nota.setId(id);
@@ -119,18 +171,22 @@ public class NotaServiceImpl implements NotaService {
     @Override
     public void excluir(Long id) {
         NotaEntity nota = notaRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Nota não encontrada com id:" + id)); // Verifica se o Nota existe antes de excluir.
+                .orElseThrow(()-> {
+                    log.error("404 NOT FOUND -> Nota não encontrada com id: {}" , id);
+                    return new NotFoundException("Nota não encontrada com id:" + id);}); // Verifica se o Nota existe antes de excluir.
         notaRepository.delete(nota);
     }
 
     @Override
     public List<NotaResponse> buscarPorAlunoId(Long idAluno) {
         if (!alunoRepository.existsById(idAluno)) {
+            log.error("404 NOT FOUND -> Aluno não encontrado com id: {}" , idAluno);
             throw new NotFoundException("Aluno não encontrado com id:" + idAluno);
         }
 
         List<NotaEntity> notas = notaRepository.findByAlunoId(idAluno);
         if(notas.isEmpty()){
+            log.error("404 NOT FOUND -> Não há notas cadastradas para o aluno com id: {}" , idAluno);
             throw new NotFoundException("Não há notas cadastradas para o aluno com id: " + idAluno);
         }
 
@@ -143,11 +199,13 @@ public class NotaServiceImpl implements NotaService {
     @Override
     public Double calcularPontuacaoAluno(Long idAluno) {
         if (!alunoRepository.existsById(idAluno)) {
+            log.error("404 NOT FOUND -> Aluno não encontrado com id: {}" , idAluno);
             throw new NotFoundException("Aluno não encontrado com id:" + idAluno);
         }
 
         List<NotaEntity> notas = notaRepository.findByAlunoId(idAluno);
         if(notas.isEmpty()){
+            log.error("404 NOT FOUND -> Não há notas cadastradas para o aluno com id: {}" , idAluno);
             throw new NotFoundException("Não há notas cadastradas para o aluno com id: " + idAluno);
         }
 

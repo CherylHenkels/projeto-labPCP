@@ -7,12 +7,15 @@ import br.fullstack.education.projetolabpcp.datasource.entity.MateriaEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.MateriaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.CursoRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.CursoByIdNotFoundException;
+import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.MateriaByIdNotFoundException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class MateriaServiceImpl implements MateriaService {
 
@@ -30,6 +33,7 @@ public class MateriaServiceImpl implements MateriaService {
     public List<MateriaResponse> buscarTodos() {
         List<MateriaEntity> materias = materiaRepository.findAll();
         if (materias.isEmpty()) {
+            log.error("404 NOT FOUND -> Não há matérias cadastradas");
             throw new NotFoundException("Não há matérias cadastradas");
         }
 
@@ -42,7 +46,9 @@ public class MateriaServiceImpl implements MateriaService {
     public MateriaResponse buscarPorId(Long id) {
 
         MateriaEntity materia = materiaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Matéria não encontrada com id:" + id) );
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Matéria não encontrada com id: {}" , id);
+                    return new NotFoundException("Matéria não encontrada com id:" + id);} );
 
         return new MateriaResponse(id, materia.getNome(), materia.getCurso().getId());
     }
@@ -53,9 +59,21 @@ public class MateriaServiceImpl implements MateriaService {
         // Pega id do token para mais tarde validar o usuário
         Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
 
+        if (materiaRequest.getNome() == null || materiaRequest.getNome().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Nome da matéria é obrigatório");
+            throw new InvalidRequestException("Nome da matéria é obrigatório");
+        }
+        if (materiaRequest.getId_curso() == null ) {
+            log.error("400 BAD REQUEST -> Id do curso é obrigatório");
+            throw new InvalidRequestException("Id do curso é obrigatório");
+        }
+
+
         // cria curso que será vinculado ao materia
         CursoEntity materiaCurso = cursoRepository.findById(materiaRequest.getId_curso())
-                .orElseThrow(() -> new NotFoundException("Curso não encontrado com id:" + materiaRequest.getId_curso()));
+                .orElseThrow(() -> {
+                    log.error(" 404 NOT FOUND -> Curso não encontrado com id: {}" , materiaRequest.getId_curso());
+                    return new NotFoundException("Curso não encontrado com id:" + materiaRequest.getId_curso());});
 
         MateriaEntity materia = new MateriaEntity();
         materia.setId(null); // garante que novo Id vai ser criado
@@ -70,10 +88,20 @@ public class MateriaServiceImpl implements MateriaService {
     public MateriaResponse alterar(Long id, MateriaRequest materiaRequest) {
         buscarPorId(id); // Verifica a existência do Materia.
 
+        if (materiaRequest.getNome() == null || materiaRequest.getNome().trim().isEmpty()) {
+            log.error("400 BAD REQUEST -> Nome da matéria é obrigatório");
+            throw new InvalidRequestException("Nome da matéria é obrigatório");
+        }
+        if (materiaRequest.getId_curso() == null ) {
+            log.error("400 BAD REQUEST -> Id do curso é obrigatório");
+            throw new InvalidRequestException("Id do curso é obrigatório");
+        }
+
         // cria curso que será vinculado ao materia
         CursoEntity materiaCurso = cursoRepository.findById(materiaRequest.getId_curso())
-                .orElseThrow(() -> new NotFoundException("Curso não encontrado com id:" + materiaRequest.getId_curso()));
-
+                .orElseThrow(() -> {
+                    log.error(" 404 NOT FOUND -> Curso não encontrado com id: {}" , materiaRequest.getId_curso());
+                    return new NotFoundException("Curso não encontrado com id:" + materiaRequest.getId_curso());});
 
         MateriaEntity materia = new MateriaEntity();
         materia.setId(id); // Assegura que a alteração será no Materia correto.
@@ -87,7 +115,9 @@ public class MateriaServiceImpl implements MateriaService {
     @Override
     public void excluir(Long id) {
         MateriaEntity materia = materiaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Matéria não encontrada com id:" + id)); // Verifica se o Materia existe antes de excluir.
+                .orElseThrow(() -> {
+                    log.error("404 NOT FOUND -> Matéria não encontrada com id: {}" , id);
+                    return new NotFoundException("Matéria não encontrada com id:" + id);}); // Verifica se o Materia existe antes de excluir.
         materiaRepository.delete(materia);
     }
 
@@ -95,6 +125,7 @@ public class MateriaServiceImpl implements MateriaService {
     public List<MateriaResponse> buscarPorCursoId(Long idCurso) {
 
         if (!cursoRepository.existsById(idCurso)) {
+            log.error("404 NOT FOUND -> Não há matérias cadastradas para o curso com id: {}" , idCurso);
             throw new NotFoundException("Não há matérias cadastradas para o curso com id:" + idCurso);
         }
 
