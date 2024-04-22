@@ -37,7 +37,7 @@ ALUNO: que apenas acessa as suas próprias notas e a pontuação total pessoal, 
 
 ## Uso
 
-Com o papel do usuário definido (a partir do Token), o mesmo pode acessar as funcionalidades do sistema a partir dos endpoints:
+Com o papel do usuário definido (a partir do Token), o mesmo pode acessar as funcionalidades do sistema a partir dos seguintes endpoints (**Observação:** todos os endpoins podem ser encontrados em Projeto1.postman_collection.json):
 
 **Endpoints para entidade Docente**
 
@@ -147,6 +147,9 @@ Com o papel do usuário definido (a partir do Token), o mesmo pode acessar as fu
 
 **Endpoint para obter Pontuação Total do Aluno**
 * Criar Turma (GET /alunos/{id}/pontuacao)
+
+
+  
 
 
 ## Melhorias
