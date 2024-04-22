@@ -120,15 +120,15 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
-        // Set a custom JwtGrantedAuthoritiesConverter to handle the extraction and conversion of authorities
+        //cria um JwtGrantedAuthoritiesConverter customizado para lidar com a extração e conversão das autoridades
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            // Extract the scope claim where the roles are stored
+            // Extrai o claim "scope" onde os papeis (roles) são armazenados
             String scope = jwt.getClaimAsString("scope");
-            // Split the scope into individual authorities, assuming they are space-separated
+            // Separa o scope em autoridades individuais. É assumido que elas são separadas por espaços
             List<String> authorities = Arrays.asList(scope.split(" "));
-            // Stream and map each authority to a Spring Security GrantedAuthority, prefixing if necessary
+            // Mapeia  cada autoridade em um Spring Security GrantedAuthority, cria prefixo quando necessário
             return authorities.stream()
-                    .map(authority -> new SimpleGrantedAuthority("ROLE_" + authority.toUpperCase())) // Prefix with ROLE_ if your application needs it
+                    .map(authority -> new SimpleGrantedAuthority("ROLE_" + authority.toUpperCase()))
                     .collect(Collectors.toList());
         });
         return jwtConverter;

@@ -47,10 +47,9 @@ public class DocenteController {
 
 
     @PostMapping
-    public ResponseEntity<DocenteResponse> criarDocente(@RequestHeader(name = "Authorization") String token,
-                                                      @RequestBody DocenteRequest docenteRequest) {
+    public ResponseEntity<DocenteResponse> criarDocente(@RequestBody DocenteRequest docenteRequest) {
         log.info("POST /docentes -> Início");
-        DocenteResponse docente = service.criar(docenteRequest, token.substring(7));
+        DocenteResponse docente = service.criar(docenteRequest);
         log.info("POST /docentes -> Docente criado com sucesso");
         log.info("POST /docentes -> 201 CREATED");
         log.debug("POST /docentes -> Response Body:\n{}\n", JsonUtil.objetoParaJson(docente));

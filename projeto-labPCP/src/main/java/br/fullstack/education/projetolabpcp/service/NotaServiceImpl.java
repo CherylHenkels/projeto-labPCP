@@ -10,10 +10,8 @@ import br.fullstack.education.projetolabpcp.datasource.repository.DocenteReposit
 import br.fullstack.education.projetolabpcp.datasource.repository.MateriaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.NotaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.AlunoRepository;
-import br.fullstack.education.projetolabpcp.infra.exception.CursoByIdNotFoundException;
 import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
-import br.fullstack.education.projetolabpcp.infra.exception.NotaByIdNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +24,12 @@ public class NotaServiceImpl implements NotaService {
     private final NotaRepository notaRepository;
     private final AlunoRepository alunoRepository;
     private final DocenteRepository docenteRepository;
-    private final TokenService tokenService;
     private final MateriaRepository materiaRepository;
 
-    public NotaServiceImpl(NotaRepository notaRepository, AlunoRepository alunoRepository, DocenteRepository docenteRepository, TokenService tokenService, MateriaRepository materiaRepository) {
+    public NotaServiceImpl(NotaRepository notaRepository, AlunoRepository alunoRepository, DocenteRepository docenteRepository,  MateriaRepository materiaRepository) {
         this.notaRepository = notaRepository;
         this.alunoRepository = alunoRepository;
         this.docenteRepository = docenteRepository;
-        this.tokenService = tokenService;
         this.materiaRepository = materiaRepository;
     }
 
@@ -65,10 +61,8 @@ public class NotaServiceImpl implements NotaService {
     }
 
     @Override
-    public NotaResponse criar(NotaRequest notaRequest, String token) {
+    public NotaResponse criar(NotaRequest notaRequest) {
 
-        // Pega id do token para mais tarde validar o usuário
-        Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
 
         if (notaRequest.getValor() == null ) {
             log.error("400 BAD REQUEST -> Valor da nota é obrigatório");

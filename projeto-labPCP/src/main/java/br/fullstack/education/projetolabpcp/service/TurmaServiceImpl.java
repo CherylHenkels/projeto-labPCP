@@ -1,18 +1,15 @@
 package br.fullstack.education.projetolabpcp.service;
 
 import br.fullstack.education.projetolabpcp.controller.dto.request.TurmaRequest;
-import br.fullstack.education.projetolabpcp.controller.dto.response.DocenteResponse;
 import br.fullstack.education.projetolabpcp.controller.dto.response.TurmaResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.CursoEntity;
 import br.fullstack.education.projetolabpcp.datasource.entity.TurmaEntity;
 import br.fullstack.education.projetolabpcp.datasource.entity.DocenteEntity;
-import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.CursoRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.DocenteRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.TurmaRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
-import br.fullstack.education.projetolabpcp.infra.exception.TurmaByIdNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +22,11 @@ public class TurmaServiceImpl implements TurmaService {
     private final TurmaRepository turmaRepository;
     private final DocenteRepository docenteRepository;
     private final CursoRepository cursoRepository;
-    private final TokenService tokenService;
 
-    public TurmaServiceImpl(TurmaRepository turmaRepository, DocenteRepository docenteRepository, CursoRepository cursoRepository, TokenService tokenService) {
+    public TurmaServiceImpl(TurmaRepository turmaRepository, DocenteRepository docenteRepository, CursoRepository cursoRepository) {
         this.turmaRepository = turmaRepository;
         this.docenteRepository = docenteRepository;
         this.cursoRepository = cursoRepository;
-        this.tokenService = tokenService;
     }
 
     @Override
@@ -60,10 +55,7 @@ public class TurmaServiceImpl implements TurmaService {
     }
 
     @Override
-    public TurmaResponse criar(TurmaRequest turmaRequest, String token) {
-
-        // Pega id do token para mais tarde validar o usuário
-        Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
+    public TurmaResponse criar(TurmaRequest turmaRequest) {
 
         if (turmaRequest.getNome() == null || turmaRequest.getNome().trim().isEmpty()) {
             log.error("400 BAD REQUEST -> Nome da turma é obrigatória");

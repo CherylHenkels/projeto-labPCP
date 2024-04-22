@@ -12,7 +12,7 @@ public interface TurmaService {
 
     TurmaResponse buscarPorId(Long id);
 
-    TurmaResponse criar(TurmaRequest turmaRequest, String token);
+    TurmaResponse criar(TurmaRequest turmaRequest);
 
     TurmaResponse alterar(Long id, TurmaRequest turmaRequest);
 

@@ -13,7 +13,7 @@ public interface CursoService {
 
     CursoResponse buscarPorId(Long id);
 
-    CursoResponse criar(CursoRequest cursoRequest, String token);
+    CursoResponse criar(CursoRequest cursoRequest);
 
     CursoResponse alterar(Long id, CursoRequest cursoRequest);
 

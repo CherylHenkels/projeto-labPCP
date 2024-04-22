@@ -2,12 +2,10 @@ package br.fullstack.education.projetolabpcp.service;
 
 import br.fullstack.education.projetolabpcp.controller.dto.request.AlunoRequest;
 import br.fullstack.education.projetolabpcp.controller.dto.response.AlunoResponse;
-import br.fullstack.education.projetolabpcp.controller.dto.response.DocenteResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.*;
 import br.fullstack.education.projetolabpcp.datasource.repository.NotaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.TurmaRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
-import br.fullstack.education.projetolabpcp.infra.exception.AlunoByIdNotFoundException;
 import br.fullstack.education.projetolabpcp.datasource.repository.AlunoRepository;
 import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
@@ -22,14 +20,12 @@ public class AlunoServiceImpl implements AlunoService {
 
     private final AlunoRepository alunoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final TokenService tokenService;
     private final TurmaRepository turmaRepository;
     private final NotaRepository notaRepository;
 
-    public AlunoServiceImpl(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository, TokenService tokenService, TurmaRepository turmaRepository, NotaRepository notaRepository) {
+    public AlunoServiceImpl(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository,  TurmaRepository turmaRepository, NotaRepository notaRepository) {
         this.alunoRepository = alunoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.tokenService = tokenService;
         this.turmaRepository = turmaRepository;
         this.notaRepository = notaRepository;
     }
@@ -60,10 +56,7 @@ public class AlunoServiceImpl implements AlunoService {
     }
 
     @Override
-    public AlunoResponse criar(AlunoRequest alunoRequest, String token) {
-
-        // Pega id do token para mais tarde validar o usuário
-        Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
+    public AlunoResponse criar(AlunoRequest alunoRequest) {
 
         if (alunoRequest.getNome() == null || alunoRequest.getNome().trim().isEmpty()) {
             log.error("400 BAD REQUEST -> Nome do aluno é obrigatório");

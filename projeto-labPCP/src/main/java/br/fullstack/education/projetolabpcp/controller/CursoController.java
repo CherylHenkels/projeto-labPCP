@@ -63,10 +63,9 @@ public class CursoController {
 
 
     @PostMapping
-    public ResponseEntity<CursoResponse> criarCurso(@RequestHeader(name = "Authorization") String token,
-                                                        @RequestBody CursoRequest cursoRequest) {
+    public ResponseEntity<CursoResponse> criarCurso(@RequestBody CursoRequest cursoRequest) {
         log.info("POST /cursos -> Início");
-        CursoResponse curso = service.criar(cursoRequest, token.substring(7));
+        CursoResponse curso = service.criar(cursoRequest);
         log.info("POST /cursos -> Curso criado com sucesso");
         log.info("POST /cursos -> 201 CREATED");
         log.debug("POST /cursos -> Response Body:\n{}\n", JsonUtil.objetoParaJson(curso));

@@ -12,7 +12,7 @@ public interface NotaService {
 
     NotaResponse buscarPorId(Long id);
 
-    NotaResponse criar(NotaRequest notaRequest, String token);
+    NotaResponse criar(NotaRequest notaRequest);
 
     NotaResponse alterar(Long id, NotaRequest entity);
 
