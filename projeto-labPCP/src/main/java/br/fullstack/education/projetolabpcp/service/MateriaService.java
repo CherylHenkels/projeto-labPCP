@@ -12,7 +12,7 @@ public interface MateriaService {
 
     MateriaResponse buscarPorId(Long id);
 
-    MateriaResponse criar(MateriaRequest materiaRequest, String token);
+    MateriaResponse criar(MateriaRequest materiaRequest);
 
     MateriaResponse alterar(Long id, MateriaRequest materiaRequest);
 

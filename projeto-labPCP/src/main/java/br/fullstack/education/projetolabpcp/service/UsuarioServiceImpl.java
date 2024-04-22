@@ -1,7 +1,7 @@
 package br.fullstack.education.projetolabpcp.service;
 
-import br.fullstack.education.projetolabpcp.controller.dto.request.InserirUsuarioRequest;
-import br.fullstack.education.projetolabpcp.controller.dto.response.InserirUsuarioResponse;
+import br.fullstack.education.projetolabpcp.controller.dto.request.UsuarioRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.UsuarioResponse;
 import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.PapelRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
@@ -27,8 +27,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final TokenService tokenService;
 
     @Override
-    public InserirUsuarioResponse cadastraNovoUsuario(
-            @RequestBody InserirUsuarioRequest inserirUsuarioRequest,
+    public UsuarioResponse cadastraNovoUsuario(
+            @RequestBody UsuarioRequest usuarioRequest,
             String token
     ) {
         //Valida se perfil tem acesso a funcionalidade
@@ -40,17 +40,17 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new InvalidCredentialsException(nomePerfil + " não tem acesso a essa funcionalidade");
         }
 
-        if (inserirUsuarioRequest.usuario() == null || inserirUsuarioRequest.usuario().trim().isEmpty()) {
+        if (usuarioRequest.usuario() == null || usuarioRequest.usuario().trim().isEmpty()) {
             log.error("400 BAD REQUEST -> Nome do usuário é obrigatório");
             throw new InvalidRequestException("Nome do usuário é obrigatório");
         }
-        if (inserirUsuarioRequest.senha() == null || inserirUsuarioRequest.senha().trim().isEmpty()) {
+        if (usuarioRequest.senha() == null || usuarioRequest.senha().trim().isEmpty()) {
             log.error("400 BAD REQUEST -> Senha é obrigatória");
             throw new InvalidRequestException("Senha é obrigatória");
         }
 
         boolean usuarioExiste = usuarioRepository
-                .findByNomeUsuario(inserirUsuarioRequest.usuario())
+                .findByNomeUsuario(usuarioRequest.usuario())
                 .isPresent(); // retorna um true se a entidade procurada existir, caso o contrário, retorna false
 
         if (usuarioExiste) {
@@ -59,19 +59,19 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         UsuarioEntity usuario = new UsuarioEntity();
-        usuario.setNomeUsuario(inserirUsuarioRequest.usuario());
+        usuario.setNomeUsuario(usuarioRequest.usuario());
         usuario.setSenha(
-                bCryptEncoder.encode(inserirUsuarioRequest.senha()) // codificar a senha
+                bCryptEncoder.encode(usuarioRequest.senha()) // codificar a senha
         );
         usuario.setPapel(
-                papelRepository.findByNome(inserirUsuarioRequest.nomePapel())
+                papelRepository.findByNome(usuarioRequest.nomePapel())
                         .orElseThrow(() -> {
                             log.error("400 BAD REQUEST -> Papel inválido ou inexistente");
                             return new InvalidRequestException("Papel inválido ou inexistente");})
         );
 
         usuarioRepository.save(usuario);
-        return new InserirUsuarioResponse(usuario.getId(), usuario.getNomeUsuario(), inserirUsuarioRequest.senha(), usuario.getPapel().getNome());
+        return new UsuarioResponse(usuario.getId(), usuario.getNomeUsuario(), usuarioRequest.senha(), usuario.getPapel().getNome());
     }
 
 

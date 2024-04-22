@@ -6,7 +6,6 @@ import br.fullstack.education.projetolabpcp.datasource.entity.DocenteEntity;
 import br.fullstack.education.projetolabpcp.datasource.entity.UsuarioEntity;
 import br.fullstack.education.projetolabpcp.datasource.repository.DocenteRepository;
 import br.fullstack.education.projetolabpcp.datasource.repository.UsuarioRepository;
-import br.fullstack.education.projetolabpcp.infra.exception.DocenteByIdNotFoundException;
 import br.fullstack.education.projetolabpcp.infra.exception.InvalidRequestException;
 import br.fullstack.education.projetolabpcp.infra.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +20,10 @@ public class DocenteServiceImpl implements DocenteService {
 
     private final DocenteRepository docenteRepository;
     private final UsuarioRepository usuarioRepository;
-    private final TokenService tokenService;
 
-    public DocenteServiceImpl(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, TokenService tokenService) {
+    public DocenteServiceImpl(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository) {
         this.docenteRepository = docenteRepository;
         this.usuarioRepository = usuarioRepository;
-        this.tokenService = tokenService;
     }
 
     @Override
@@ -56,10 +53,8 @@ public class DocenteServiceImpl implements DocenteService {
     }
 
     @Override
-    public DocenteResponse criar(DocenteRequest docenteRequest, String token) {
+    public DocenteResponse criar(DocenteRequest docenteRequest) {
 
-        // Pega id do token para mais tarde validar o usuário
-        Long tokenId = Long.valueOf( tokenService.buscaCampo(token,"sub"));
 
         if (docenteRequest.getNome() == null || docenteRequest.getNome().trim().isEmpty()) {
             log.error("400 BAD REQUEST -> Nome do docente é obrigatório");

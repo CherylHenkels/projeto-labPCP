@@ -47,10 +47,9 @@ public class TurmaController {
 
 
     @PostMapping
-    public ResponseEntity<TurmaResponse> criarTurma(@RequestHeader(name = "Authorization") String token,
-                                                      @RequestBody TurmaRequest turmaRequest) {
+    public ResponseEntity<TurmaResponse> criarTurma( @RequestBody TurmaRequest turmaRequest) {
         log.info("POST /turmas -> Início");
-        TurmaResponse turma = service.criar(turmaRequest, token.substring(7));
+        TurmaResponse turma = service.criar(turmaRequest);
         log.info("POST /turmas -> Turma cadastrada");
         log.info("POST /turmas -> 201 CREATED");
         log.debug("POST /turmas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(turma));

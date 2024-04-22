@@ -2,7 +2,6 @@ package br.fullstack.education.projetolabpcp.service;
 
 import br.fullstack.education.projetolabpcp.controller.dto.request.DocenteRequest;
 import br.fullstack.education.projetolabpcp.controller.dto.response.DocenteResponse;
-import br.fullstack.education.projetolabpcp.datasource.entity.DocenteEntity;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public interface DocenteService {
 
     DocenteResponse buscarPorId(Long id);
 
-    DocenteResponse criar(DocenteRequest docenteRequest, String token);
+    DocenteResponse criar(DocenteRequest docenteRequest);
 
     DocenteResponse alterar(Long id, DocenteRequest docenteRequest);
 

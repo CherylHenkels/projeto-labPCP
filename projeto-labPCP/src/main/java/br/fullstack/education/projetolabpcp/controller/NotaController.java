@@ -45,21 +45,11 @@ public class NotaController {
         return ResponseEntity.status(HttpStatus.OK).body(nota);
     }
 
-//    @GetMapping("/por-aluno/{id_aluno}")
-//    public ResponseEntity<List<NotaEntity>> buscarPorAlunoId(@PathVariable("id_aluno") Long idAluno) {
-//        log.info("GET /notas/por-aluno/{} -> Início" , idAluno );
-//        List<NotaEntity> notas = service.buscarPorAlunoId(idAluno);
-//        log.info("GET /notas -> Encontrados {} registros", notas.size());
-//        log.info("GET /notas -> 200 OK");
-//        log.debug("GET /notas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(notas));
-//        return ResponseEntity.status(HttpStatus.OK).body(notas);
-//    }
 
     @PostMapping
-    public ResponseEntity<NotaResponse> criarNota(@RequestHeader(name = "Authorization") String token,
-                                                      @RequestBody NotaRequest notaRequest) {
+    public ResponseEntity<NotaResponse> criarNota(@RequestBody NotaRequest notaRequest) {
         log.info("POST /notas -> Início");
-        NotaResponse nota = service.criar(notaRequest, token.substring(7));
+        NotaResponse nota = service.criar(notaRequest);
         log.info("POST /notas -> Nota criada com sucesso");
         log.info("POST /notas -> 201 CREATED");
         log.debug("POST /notas -> Response Body:\n{}\n", JsonUtil.objetoParaJson(nota));

@@ -1,12 +1,12 @@
 package br.fullstack.education.projetolabpcp.service;
 
-import br.fullstack.education.projetolabpcp.controller.dto.request.InserirUsuarioRequest;
-import br.fullstack.education.projetolabpcp.controller.dto.response.InserirUsuarioResponse;
+import br.fullstack.education.projetolabpcp.controller.dto.request.UsuarioRequest;
+import br.fullstack.education.projetolabpcp.controller.dto.response.UsuarioResponse;
 
 
 
 public interface UsuarioService {
 
-    InserirUsuarioResponse cadastraNovoUsuario(InserirUsuarioRequest inserirUsuarioRequest, String token);
+    UsuarioResponse cadastraNovoUsuario(UsuarioRequest usuarioRequest, String token);
 
 }

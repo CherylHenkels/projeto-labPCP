@@ -12,7 +12,7 @@ public interface AlunoService {
 
     AlunoResponse buscarPorId(Long id);
 
-    AlunoResponse criar(AlunoRequest alunoRequest, String token);
+    AlunoResponse criar(AlunoRequest alunoRequest);
 
     AlunoResponse alterar(Long id, AlunoRequest alunoRequest);
 

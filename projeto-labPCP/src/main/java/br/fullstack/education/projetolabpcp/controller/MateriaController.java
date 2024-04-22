@@ -45,21 +45,11 @@ public class MateriaController {
         return ResponseEntity.status(HttpStatus.OK).body(materia);
     }
 
-//    @GetMapping("/por-curso/{id_curso}")
-//    public ResponseEntity<List<MateriaEntity>> buscarPorCursoId(@PathVariable("id_curso") Long idCurso) {
-//        log.info("GET /materias/{} -> Início" , idCurso );
-//        List<MateriaEntity> materias = service.buscarPorCursoId(idCurso);
-//        log.info("GET /materias/curso -> Encontrados {} registros", materias.size());
-//        log.info("GET /materias/curso -> 200 OK");
-//        log.debug("GET /materias/curso -> Response Body:\n{}\n", JsonUtil.objetoParaJson(materias));
-//        return ResponseEntity.status(HttpStatus.OK).body(materias);
-//    }
 
     @PostMapping
-    public ResponseEntity<MateriaResponse> criarMateria(@RequestHeader(name = "Authorization") String token,
-                                                      @RequestBody MateriaRequest materiaRequest) {
+    public ResponseEntity<MateriaResponse> criarMateria(@RequestBody MateriaRequest materiaRequest) {
         log.info("POST /materias -> inicio");
-        MateriaResponse materia = service.criar(materiaRequest, token.substring(7));
+        MateriaResponse materia = service.criar(materiaRequest);
         log.info("POST /materias -> Matéria criada com sucesso");
         log.info("POST /materias -> 201 CREATED");
         log.debug("POST /materias -> Response Body:\n{}\n", JsonUtil.objetoParaJson(materia));
